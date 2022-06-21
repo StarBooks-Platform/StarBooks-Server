@@ -1,8 +1,22 @@
+using Microsoft.EntityFrameworkCore;
+using Refit;
+using StarBooks.Domain.Core.BooksDataSource;
+using StarBooks.Infrastructure.Books;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services
+    .AddRefitClient<IBooksApi>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://www.googleapis.com/books/v1"));
+
+builder.Services.AddDbContext<BookContext>(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
