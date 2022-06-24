@@ -1,15 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace StarBooks.Domain.Books;
 
-[Table("saleInfos"), Owned]
-public record SaleInfo(
-    [property: JsonIgnore, Key] Guid Id,
-    [property: JsonPropertyName("country")] string Country,
-    [property: JsonPropertyName("isEbook")] bool IsEbook,
-    [property: JsonPropertyName("listPrice")] Price ListPrice,
-    [property: JsonPropertyName("retailPrice")] Price RetailPrice
-);
+[Owned]
+public class SaleInfo
+{
+    [JsonPropertyName("country")]
+    public string Country { get; set; }
+
+    [JsonPropertyName("isEbook")]
+    public bool IsEbook { get; set; }
+
+    [JsonPropertyName("listPrice")]
+    public Price ListPrice { get; set; }
+
+    [JsonPropertyName("retailPrice")]
+    public Price RetailPrice { get; set; }
+}

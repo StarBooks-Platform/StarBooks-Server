@@ -1,14 +1,34 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace StarBooks.Domain.Books;
 
 [Table("books")]
-public record BookModel(
-    [property: JsonIgnore] [property: Key] Guid Id,
-    [property: JsonPropertyName("volumeInfo")] VolumeInfo VolumeInfo,
-    [property: JsonPropertyName("saleInfo")] SaleInfo SaleInfo,
-    [property: JsonPropertyName("accessInfo")] AccessInfo AccessInfo,
-    [property: JsonPropertyName("searchInfo")] SearchInfo SearchInfo
-);
+public class BookModel
+{
+    [JsonIgnore, Key]
+    public int Id { get; set; }
+
+    [JsonPropertyName("volumeInfo")]
+    public VolumeInfo VolumeInfo { get; set; }
+
+    [JsonPropertyName("saleInfo")]
+    public SaleInfo SaleInfo { get; set; }
+
+    [JsonPropertyName("accessInfo")]
+    public AccessInfo AccessInfo { get; set; }
+
+    [JsonPropertyName("searchInfo")]
+    public SearchInfo SearchInfo { get; set; }
+    
+    [JsonIgnore]
+    public List<AuthorModel> Authors { get; set; }
+    
+    [JsonIgnore]
+    public List<CategoryModel> Categories { get; set; }
+    
+    [JsonIgnore]
+    public List<IndustryIdentifierModel> Identifiers { get; set; }
+}

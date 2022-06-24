@@ -16,7 +16,16 @@ internal static class ModelBuilderExtensions
             .ToList()
             .ForEach(
                 topic =>
-                    modelBuilder.Entity<BookModel>().HasData(booksApi.GetBooks(topic).Result.Items)
+                {
+                    var books = booksApi.GetBooks(topic).Result.Items;
+                    var nrOfBooks = books.Count;
+                    books = books.Select(b =>
+                    {
+                        b.Id = nrOfBooks--;
+                        return b;
+                    }).ToList();
+                    modelBuilder.Entity<BookModel>().HasData(books);
+                }
             );
     }
 }
