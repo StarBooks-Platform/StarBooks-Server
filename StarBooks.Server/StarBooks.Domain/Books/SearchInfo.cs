@@ -7,5 +7,5 @@ namespace StarBooks.Domain.Books;
 public class SearchInfo
 {
     [JsonPropertyName("textSnippet")]
-    string TextSnippet { get; set; }
+    public string? TextSnippet { get; set; }
 }

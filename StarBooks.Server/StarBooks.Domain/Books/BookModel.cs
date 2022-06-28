@@ -9,7 +9,7 @@ namespace StarBooks.Domain.Books;
 public class BookModel
 {
     [JsonIgnore, Key]
-    public int Id { get; set; }
+    public int BookId { get; set; }
 
     [JsonPropertyName("volumeInfo")]
     public VolumeInfo VolumeInfo { get; set; }
@@ -24,11 +24,11 @@ public class BookModel
     public SearchInfo SearchInfo { get; set; }
     
     [JsonIgnore]
-    public List<AuthorModel> Authors { get; set; }
+    public ICollection<AuthorModel> Authors { get; set; }
     
     [JsonIgnore]
-    public List<CategoryModel> Categories { get; set; }
+    public ICollection<CategoryModel> Categories { get; set; }
     
     [JsonIgnore]
-    public List<IndustryIdentifierModel> Identifiers { get; set; }
+    public ICollection<IndustryIdentifierModel> Identifiers { get; set; }
 }

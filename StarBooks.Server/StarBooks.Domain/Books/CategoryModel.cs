@@ -9,9 +9,11 @@ namespace StarBooks.Domain.Books;
 public class CategoryModel
 {
    [Key]
-   public int Id { get; set; }
+   public int CategoryId { get; set; }
    
    public string Topic { get; set; }
+   
+   public ICollection<BookModel> Books { get; set; }
 
    public override string ToString()
    {

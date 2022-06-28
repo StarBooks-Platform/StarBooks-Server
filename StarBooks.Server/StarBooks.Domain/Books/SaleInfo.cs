@@ -7,10 +7,10 @@ namespace StarBooks.Domain.Books;
 public class SaleInfo
 {
     [JsonPropertyName("country")]
-    public string Country { get; set; }
+    public string? Country { get; set; }
 
     [JsonPropertyName("isEbook")]
-    public bool IsEbook { get; set; }
+    public bool? IsEbook { get; set; }
 
     [JsonPropertyName("listPrice")]
     public Price ListPrice { get; set; }

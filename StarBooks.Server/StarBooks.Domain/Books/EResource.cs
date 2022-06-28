@@ -7,8 +7,8 @@ namespace StarBooks.Domain.Books;
 public class EResource
 {
     [JsonPropertyName("isAvailable")]
-    public bool IsAvailable { get; set; }
+    public bool? IsAvailable { get; set; }
 
     [JsonPropertyName("acsTokenLink")]
-    public string AcsTokenLink { get; set; }
+    public string? AcsTokenLink { get; set; }
 }

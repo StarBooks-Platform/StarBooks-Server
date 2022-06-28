@@ -7,19 +7,19 @@ namespace StarBooks.Domain.Books;
 public class AccessInfo
 {
     [JsonPropertyName("country")]
-    public string Country { get; set; }
+    public string? Country { get; set; }
 
     [JsonPropertyName("viewability")]
-    public string Viewability { get; set; }
+    public string? Viewability { get; set; }
 
     [JsonPropertyName("embeddable")]
-    public bool Embeddable { get; set; }
+    public bool? Embeddable { get; set; }
 
     [JsonPropertyName("publicDomain")]
-    public bool PublicDomain { get; set; }
+    public bool? PublicDomain { get; set; }
 
     [JsonPropertyName("textToSpeechPermission")]
-    public string TextToSpeechPermission { get; set; }
+    public string? TextToSpeechPermission { get; set; }
 
     [JsonPropertyName("epub")]
     public EResource Epub { get; set; }
@@ -28,8 +28,8 @@ public class AccessInfo
     public EResource Pdf { get; set; }
 
     [JsonPropertyName("webReaderLink")]
-    public string WebReaderLink { get; set; }
+    public string? WebReaderLink { get; set; }
 
     [JsonPropertyName("quoteSharingAllowed")]
-    public bool QuoteSharingAllowed { get; set; }
+    public bool? QuoteSharingAllowed { get; set; }
 }

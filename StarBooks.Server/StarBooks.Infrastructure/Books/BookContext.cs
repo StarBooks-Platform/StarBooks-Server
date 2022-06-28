@@ -4,7 +4,7 @@ using StarBooks.Domain.Books;
 
 namespace StarBooks.Infrastructure.Books;
 
-internal class BookContext : DbContext
+public class BookContext : DbContext
 {
     public DbSet<BookModel> Books { get; set; }
     public DbSet<AuthorModel> Authors { get; set; }
@@ -12,11 +12,6 @@ internal class BookContext : DbContext
     public DbSet<IndustryIdentifierModel> Identifiers { get; set; }
 
     public BookContext(DbContextOptions<BookContext> options) : base(options) { }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        // modelBuilder.Seed();
-    }
 }
 
 internal class BookContextFactory : IDesignTimeDbContextFactory<BookContext>

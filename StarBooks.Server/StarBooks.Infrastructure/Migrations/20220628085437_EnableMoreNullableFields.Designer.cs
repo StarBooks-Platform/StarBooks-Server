@@ -12,8 +12,8 @@ using StarBooks.Infrastructure.Books;
 namespace StarBooks.Infrastructure.Migrations
 {
     [DbContext(typeof(BookContext))]
-    [Migration("20220624130954_InitialCreateBooksTable")]
-    partial class InitialCreateBooksTable
+    [Migration("20220628085437_EnableMoreNullableFields")]
+    partial class EnableMoreNullableFields
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,11 +24,43 @@ namespace StarBooks.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("AuthorModelBookModel", b =>
+                {
+                    b.Property<int>("AuthorsAuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BooksBookId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AuthorsAuthorId", "BooksBookId");
+
+                    b.HasIndex("BooksBookId");
+
+                    b.ToTable("AuthorModelBookModel");
+                });
+
+            modelBuilder.Entity("BookModelCategoryModel", b =>
+                {
+                    b.Property<int>("BooksBookId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoriesCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BooksBookId", "CategoriesCategoryId");
+
+                    b.HasIndex("CategoriesCategoryId");
+
+                    b.ToTable("BookModelCategoryModel");
+                });
+
             modelBuilder.Entity("StarBooks.Domain.Books.AuthorModel", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("AuthorId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AuthorId"), 1L, 1);
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -38,47 +70,51 @@ namespace StarBooks.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("AuthorId");
 
                     b.ToTable("authors");
                 });
 
             modelBuilder.Entity("StarBooks.Domain.Books.BookModel", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("BookId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("AuthorModelId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookId"), 1L, 1);
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorModelId");
+                    b.HasKey("BookId");
 
                     b.ToTable("books");
                 });
 
             modelBuilder.Entity("StarBooks.Domain.Books.CategoryModel", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"), 1L, 1);
 
                     b.Property<string>("Topic")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("CategoryId");
 
                     b.ToTable("categories");
                 });
 
             modelBuilder.Entity("StarBooks.Domain.Books.IndustryIdentifierModel", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("IdentifierId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdentifierId"), 1L, 1);
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Identifier")
                         .IsRequired()
@@ -88,92 +124,114 @@ namespace StarBooks.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("IdentifierId");
+
+                    b.HasIndex("BookId");
 
                     b.ToTable("identifiers");
                 });
 
-            modelBuilder.Entity("StarBooks.Domain.Books.BookModel", b =>
+            modelBuilder.Entity("AuthorModelBookModel", b =>
                 {
                     b.HasOne("StarBooks.Domain.Books.AuthorModel", null)
-                        .WithMany("Books")
-                        .HasForeignKey("AuthorModelId");
+                        .WithMany()
+                        .HasForeignKey("AuthorsAuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
+                    b.HasOne("StarBooks.Domain.Books.BookModel", null)
+                        .WithMany()
+                        .HasForeignKey("BooksBookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BookModelCategoryModel", b =>
+                {
+                    b.HasOne("StarBooks.Domain.Books.BookModel", null)
+                        .WithMany()
+                        .HasForeignKey("BooksBookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StarBooks.Domain.Books.CategoryModel", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("StarBooks.Domain.Books.BookModel", b =>
+                {
                     b.OwnsOne("StarBooks.Domain.Books.AccessInfo", "AccessInfo", b1 =>
                         {
-                            b1.Property<Guid>("BookModelId")
-                                .HasColumnType("uniqueidentifier");
+                            b1.Property<int>("BookModelBookId")
+                                .HasColumnType("int");
 
                             b1.Property<string>("Country")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<bool>("Embeddable")
+                            b1.Property<bool?>("Embeddable")
                                 .HasColumnType("bit");
 
-                            b1.Property<bool>("PublicDomain")
+                            b1.Property<bool?>("PublicDomain")
                                 .HasColumnType("bit");
 
-                            b1.Property<bool>("QuoteSharingAllowed")
+                            b1.Property<bool?>("QuoteSharingAllowed")
                                 .HasColumnType("bit");
 
                             b1.Property<string>("TextToSpeechPermission")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Viewability")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("WebReaderLink")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("BookModelId");
+                            b1.HasKey("BookModelBookId");
 
                             b1.ToTable("books");
 
                             b1.WithOwner()
-                                .HasForeignKey("BookModelId");
+                                .HasForeignKey("BookModelBookId");
 
                             b1.OwnsOne("StarBooks.Domain.Books.EResource", "Epub", b2 =>
                                 {
-                                    b2.Property<Guid>("AccessInfoBookModelId")
-                                        .HasColumnType("uniqueidentifier");
+                                    b2.Property<int>("AccessInfoBookModelBookId")
+                                        .HasColumnType("int");
 
                                     b2.Property<string>("AcsTokenLink")
-                                        .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
-                                    b2.Property<bool>("IsAvailable")
+                                    b2.Property<bool?>("IsAvailable")
                                         .HasColumnType("bit");
 
-                                    b2.HasKey("AccessInfoBookModelId");
+                                    b2.HasKey("AccessInfoBookModelBookId");
 
                                     b2.ToTable("books");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("AccessInfoBookModelId");
+                                        .HasForeignKey("AccessInfoBookModelBookId");
                                 });
 
                             b1.OwnsOne("StarBooks.Domain.Books.EResource", "Pdf", b2 =>
                                 {
-                                    b2.Property<Guid>("AccessInfoBookModelId")
-                                        .HasColumnType("uniqueidentifier");
+                                    b2.Property<int>("AccessInfoBookModelBookId")
+                                        .HasColumnType("int");
 
                                     b2.Property<string>("AcsTokenLink")
-                                        .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
-                                    b2.Property<bool>("IsAvailable")
+                                    b2.Property<bool?>("IsAvailable")
                                         .HasColumnType("bit");
 
-                                    b2.HasKey("AccessInfoBookModelId");
+                                    b2.HasKey("AccessInfoBookModelBookId");
 
                                     b2.ToTable("books");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("AccessInfoBookModelId");
+                                        .HasForeignKey("AccessInfoBookModelBookId");
                                 });
 
                             b1.Navigation("Epub")
@@ -185,47 +243,58 @@ namespace StarBooks.Infrastructure.Migrations
 
                     b.OwnsOne("StarBooks.Domain.Books.SaleInfo", "SaleInfo", b1 =>
                         {
-                            b1.Property<Guid>("BookModelId")
-                                .HasColumnType("uniqueidentifier");
+                            b1.Property<int>("BookModelBookId")
+                                .HasColumnType("int");
 
                             b1.Property<string>("Country")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<bool>("IsEbook")
+                            b1.Property<bool?>("IsEbook")
                                 .HasColumnType("bit");
 
-                            b1.HasKey("BookModelId");
+                            b1.HasKey("BookModelBookId");
 
                             b1.ToTable("books");
 
                             b1.WithOwner()
-                                .HasForeignKey("BookModelId");
+                                .HasForeignKey("BookModelBookId");
 
                             b1.OwnsOne("StarBooks.Domain.Books.Price", "ListPrice", b2 =>
                                 {
-                                    b2.Property<Guid>("SaleInfoBookModelId")
-                                        .HasColumnType("uniqueidentifier");
+                                    b2.Property<int>("SaleInfoBookModelBookId")
+                                        .HasColumnType("int");
 
-                                    b2.HasKey("SaleInfoBookModelId");
+                                    b2.Property<decimal?>("Amount")
+                                        .HasColumnType("decimal(18,2)");
+
+                                    b2.Property<string>("CurrencyCode")
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.HasKey("SaleInfoBookModelBookId");
 
                                     b2.ToTable("books");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("SaleInfoBookModelId");
+                                        .HasForeignKey("SaleInfoBookModelBookId");
                                 });
 
                             b1.OwnsOne("StarBooks.Domain.Books.Price", "RetailPrice", b2 =>
                                 {
-                                    b2.Property<Guid>("SaleInfoBookModelId")
-                                        .HasColumnType("uniqueidentifier");
+                                    b2.Property<int>("SaleInfoBookModelBookId")
+                                        .HasColumnType("int");
 
-                                    b2.HasKey("SaleInfoBookModelId");
+                                    b2.Property<decimal?>("Amount")
+                                        .HasColumnType("decimal(18,2)");
+
+                                    b2.Property<string>("CurrencyCode")
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.HasKey("SaleInfoBookModelBookId");
 
                                     b2.ToTable("books");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("SaleInfoBookModelId");
+                                        .HasForeignKey("SaleInfoBookModelBookId");
                                 });
 
                             b1.Navigation("ListPrice")
@@ -237,85 +306,80 @@ namespace StarBooks.Infrastructure.Migrations
 
                     b.OwnsOne("StarBooks.Domain.Books.SearchInfo", "SearchInfo", b1 =>
                         {
-                            b1.Property<Guid>("BookModelId")
-                                .HasColumnType("uniqueidentifier");
+                            b1.Property<int>("BookModelBookId")
+                                .HasColumnType("int");
 
-                            b1.HasKey("BookModelId");
+                            b1.Property<string>("TextSnippet")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("BookModelBookId");
 
                             b1.ToTable("books");
 
                             b1.WithOwner()
-                                .HasForeignKey("BookModelId");
+                                .HasForeignKey("BookModelBookId");
                         });
 
                     b.OwnsOne("StarBooks.Domain.Books.VolumeInfo", "VolumeInfo", b1 =>
                         {
-                            b1.Property<Guid>("BookModelId")
-                                .HasColumnType("uniqueidentifier");
+                            b1.Property<int>("BookModelBookId")
+                                .HasColumnType("int");
 
-                            b1.Property<decimal>("AverageRating")
-                                .HasColumnType("decimal(18,2)");
+                            b1.Property<double?>("AverageRating")
+                                .HasColumnType("float");
 
                             b1.Property<string>("Description")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("InfoLink")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Language")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<int>("PageCount")
+                            b1.Property<int?>("PageCount")
                                 .HasColumnType("int");
 
                             b1.Property<string>("PreviewLink")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("PrintType")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("PublishedDate")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                            b1.Property<DateTime?>("PublishedDate")
+                                .HasColumnType("datetime2");
 
                             b1.Property<string>("Publisher")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<int>("RatingsCount")
+                            b1.Property<int?>("RatingsCount")
                                 .HasColumnType("int");
 
                             b1.Property<string>("Title")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.HasKey("BookModelId");
+                            b1.HasKey("BookModelBookId");
 
                             b1.ToTable("books");
 
                             b1.WithOwner()
-                                .HasForeignKey("BookModelId");
+                                .HasForeignKey("BookModelBookId");
 
                             b1.OwnsOne("StarBooks.Domain.Books.ImageLinks", "ImageLinks", b2 =>
                                 {
-                                    b2.Property<Guid>("VolumeInfoBookModelId")
-                                        .HasColumnType("uniqueidentifier");
+                                    b2.Property<int>("VolumeInfoBookModelBookId")
+                                        .HasColumnType("int");
 
                                     b2.Property<string>("ThumbnailUrl")
-                                        .IsRequired()
                                         .HasColumnType("nvarchar(max)");
 
-                                    b2.HasKey("VolumeInfoBookModelId");
+                                    b2.HasKey("VolumeInfoBookModelBookId");
 
                                     b2.ToTable("books");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("VolumeInfoBookModelId");
+                                        .HasForeignKey("VolumeInfoBookModelBookId");
                                 });
 
                             b1.Navigation("ImageLinks")
@@ -335,9 +399,20 @@ namespace StarBooks.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("StarBooks.Domain.Books.AuthorModel", b =>
+            modelBuilder.Entity("StarBooks.Domain.Books.IndustryIdentifierModel", b =>
                 {
-                    b.Navigation("Books");
+                    b.HasOne("StarBooks.Domain.Books.BookModel", "Book")
+                        .WithMany("Identifiers")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+                });
+
+            modelBuilder.Entity("StarBooks.Domain.Books.BookModel", b =>
+                {
+                    b.Navigation("Identifiers");
                 });
 #pragma warning restore 612, 618
         }

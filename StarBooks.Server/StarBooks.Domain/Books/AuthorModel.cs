@@ -9,12 +9,12 @@ namespace StarBooks.Domain.Books;
 public class AuthorModel
 {
     [Key]
-    public int Id { get; set; }
+    public int AuthorId { get; set; }
     
     public string FirstName { get; set; }
     public string LastName { get; set; }
     
-    public List<BookModel> Books { get; set; }
+    public ICollection<BookModel> Books { get; set; }
     
     [NotMapped]
     public string FullName => $"{FirstName} {LastName}";

@@ -8,11 +8,14 @@ namespace StarBooks.Domain.Books;
 public class IndustryIdentifierModel
 {
     [JsonIgnore, Key]
-    public int Id { get; set; }
+    public int IdentifierId { get; set; }
     
     [JsonPropertyName("type")]
     public string Type { get; set; }
 
     [JsonPropertyName("identifier")]
     public string Identifier { get; set; }
+    
+    [JsonIgnore]
+    public BookModel Book { get; set; }
 }

@@ -7,8 +7,8 @@ namespace StarBooks.Domain.Books;
 public class Price
 {
     [JsonPropertyName("amount")]
-    decimal Amount { get; set; }
+    public double? Amount { get; set; }
 
     [JsonPropertyName("currencyCode")]
-    string CurrencyCode { get; set; }
+    public string? CurrencyCode { get; set; }
 }
