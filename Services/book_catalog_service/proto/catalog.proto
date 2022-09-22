@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package star_books.catalog;
+
+message GetBooksRequest {
+}
+
+message GetBooksResponse {
+  Book book = 1;
+}
+
+service CatalogService {
+  rpc GetBooks(GetBooksRequest) returns (stream GetBooksResponse) {}
+}
+
+message Author {
+  string first_name = 1;
+  string last_name = 2;
+}
+
+enum Genre {
+  UNKNOWN = 0;
+  SCIENCE_FICTION = 1;
+  SCIENCE = 2;
+  FICTION = 3;
+  NON_FICTION = 4;
+}
+
+message Book {
+  string ISBN = 1;
+  string title = 2;
+  string publisher_name = 3;
+  repeated Author authors = 4;
+  Genre genre = 5;
+  string short_description = 6;
+  double price = 7;
+  bytes cover_image = 8;
+  int32 release_year = 9;
+}
