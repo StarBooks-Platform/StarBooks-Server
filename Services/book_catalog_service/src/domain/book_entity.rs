@@ -1,21 +1,33 @@
+use std::fmt;
+use std::fmt::Formatter;
 use domain_patterns::models::Entity;
 use isbnid::isbn::ISBN;
-use mongodb::bson::Uuid;
+use mongodb::bson::oid::ObjectId;
 use crate::BookModel;
-use crate::domain::rblan_string_vvo::{RblanStringVVO, ValidationError};
+use crate::domain::core::errors::ValidationError;
+use crate::domain::core::vvos::RblanStringVVO;
 use crate::infrastructure::book_model::{AuthorModel, PublisherModel};
 
+#[derive(Debug)]
 pub struct Book {
-    pub id: Uuid,
-    pub isbn: ISBN,
+    pub id: ObjectId,
+    pub isbn: ISBNDebugWrapper,
     pub title: RblanStringVVO<5, 50>,
     pub authors: Option<Vec<Author>>,
     pub publisher: Publisher,
-    pub short_description: RblanStringVVO<10, 100>,
-    pub long_description: RblanStringVVO<50, 1000>,
+    pub short_description: RblanStringVVO<10, 500>,
+    pub long_description: RblanStringVVO<50, 2000>,
     pub year: u32,
     pub num_pages: u32,
     pub cover_image: Option<Vec<u8>>,
+}
+
+pub struct ISBNDebugWrapper(ISBN);
+
+impl fmt::Debug for ISBNDebugWrapper {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0.isbn13())
+    }
 }
 
 impl Entity for Book {
@@ -85,7 +97,7 @@ impl TryFrom<BookModel> for Book {
 
         Ok(Book {
             id,
-            isbn,
+            isbn: ISBNDebugWrapper(isbn),
             title,
             authors: authors
                 .into_iter()
@@ -102,6 +114,7 @@ impl TryFrom<BookModel> for Book {
     }
 }
 
+#[derive(Debug)]
 pub struct Author {
     pub first_name: RblanStringVVO<5, 50>,
     pub last_name: RblanStringVVO<5, 50>,
@@ -127,6 +140,7 @@ impl TryFrom<AuthorModel> for Author {
     }
 }
 
+#[derive(Debug)]
 pub struct Publisher {
     pub name: RblanStringVVO<5, 100>,
     pub address: RblanStringVVO<5, 100>,

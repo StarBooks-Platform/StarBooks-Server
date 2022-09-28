@@ -1,28 +1,12 @@
-use std::{error, fmt};
+use std::fmt;
 use std::fmt::{Display, Formatter};
 use domain_patterns::models::ValueObject;
+use crate::domain::core::errors::ValidationError;
 
 /// Range based length alphanumeric string vvo type
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RblanStringVVO<const MIN_LENGTH: usize, const MAX_LENGTH: usize> {
     value: String,
-}
-
-#[derive(Debug, Clone)]
-pub struct ValidationError {
-    pub message: String,
-}
-
-impl Display for ValidationError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.message.as_str())
-    }
-}
-
-impl error::Error for ValidationError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        None
-    }
 }
 
 impl<const MIN_LENGTH: usize, const MAX_LENGTH: usize> TryFrom<String>
@@ -46,9 +30,9 @@ for RblanStringVVO<MIN_LENGTH, MAX_LENGTH> {
             });
         }
 
-        if !value.chars().all(|c| c.is_alphanumeric() || c == ' ') {
+        if !value.chars().all(|c| c.is_alphanumeric() || c.is_ascii_punctuation() || c == ' ') {
             return Err(ValidationError {
-                message: "Must be alphanumeric or space".to_string()
+                message: "Must be alphanumeric".to_string()
             });
         }
 

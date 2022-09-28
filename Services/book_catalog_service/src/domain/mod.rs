@@ -1,2 +1,3 @@
 pub mod book_entity;
-pub mod rblan_string_vvo;
+pub mod i_repository;
+pub mod core;
