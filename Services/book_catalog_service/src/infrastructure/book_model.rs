@@ -1,5 +1,6 @@
 use mongodb::bson::oid::ObjectId;
 use serde::{Serialize, Deserialize};
+use rust_embed::RustEmbed;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BookModel {
@@ -13,7 +14,7 @@ pub struct BookModel {
     pub long_description: String,
     pub year: u32,
     pub num_pages: u32,
-    #[serde(rename = "image_blob")]
+    #[serde(rename = "image_file")]
     pub cover_image: Option<String>,
     pub price: f32,
     pub genre: GenreModel,
@@ -41,3 +42,7 @@ pub enum GenreModel {
     Fiction = 3,
     NonFiction = 4,
 }
+
+#[derive(RustEmbed)]
+#[folder = "assets/images/"]
+pub struct Asset;

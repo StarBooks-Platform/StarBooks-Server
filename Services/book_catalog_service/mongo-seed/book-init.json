@@ -1,0 +1,232 @@
+[
+  {
+    "isbn": "978-1-60309-057-5",
+    "title": "The Lightning Thief",
+    "authors": [
+      {
+        "firstname": "Rick",
+        "lastname": "Riordan"
+      },
+      {
+        "firstname": "John",
+        "lastname": "Rocco"
+      }
+    ],
+    "publisher": {
+        "name": "Disney Hyperion",
+        "address": "New York"
+    },
+    "genre": "Fiction",
+    "price": 12.50,
+    "year": 2005,
+    "num_pages": 384,
+    "short_description": "The first book in the Percy Jackson and the Olympians series.",
+    "long_description": "The first book in the Percy Jackson and the Olympians series. Percy Jackson is a good kid, but he can't seem to focus on his schoolwork or control his temper. And lately, being away at boarding school is only getting worse-Percy could have sworn his pre-algebra teacher turned into a monster and tried to kill him. When Percy's mom finds out, she knows it's time that he knew the truth about where he came from, and that he go to the one place he'll be safe. She sends Percy to Camp Half-Blood, a summer camp for demigods (on Long Island), where he learns that the father he never knew is Poseidon, God of the Sea. Soon a mystery unfolds and together with his friends—one a satyr and the other the demigod daughter of Athena-Percy sets out on a quest across the United States to reach the gates of the Underworld (located in a recording studio in Hollywood) and prevent a catastrophic war between the gods.",
+    "image_file": "978-1-60309-057-5.jpg"
+  },
+  {
+    "isbn": "978-1-60309-450-4",
+    "title": "The Sea of Monsters",
+    "authors": [
+      {
+        "firstname": "Rick",
+        "lastname": "Riordan"
+      },
+      {
+        "firstname": "John",
+        "lastname": "Rocco"
+      }
+    ],
+    "publisher": {
+        "name": "Disney Hyperion",
+        "address": "New York"
+    },
+    "genre": "Fiction",
+    "price": 12.50,
+    "year": 2006,
+    "num_pages": 304,
+    "short_description": "The second book in the Percy Jackson and the Olympians series.",
+    "long_description": "The second book in the Percy Jackson and the Olympians series. Percy Jackson and his friends have reached the safety of Camp Half-Blood, despite the fact that he has had to close the Doors of Death, preventing the giants from invading the camp. But the giant lord, Typhon, is still threatening to invade and destroy the camp. Percy and his friends must set out on a quest to find the Golden Fleece, all the while trying to stop a war between the gods.",
+    "image_file": "978-1-60309-450-4.jpg"
+  },
+  {
+    "isbn": "978-1-60309-453-5",
+    "title": "The Titan's Curse",
+    "authors": [
+      {
+        "firstname": "Rick",
+        "lastname": "Riordan"
+      },
+      {
+        "firstname": "John",
+        "lastname": "Rocco"
+      }
+    ],
+    "publisher": {
+        "name": "Disney Hyperion",
+        "address": "New York"
+    },
+    "genre": "Fiction",
+    "price": 12.50,
+    "year": 2007,
+    "num_pages": 304,
+    "short_description": "The third book in the Percy Jackson and the Olympians series.",
+    "long_description": "The third book in the Percy Jackson and the Olympians series. Percy Jackson and his friends are still at Camp Half-Blood, but they are no longer safe. The Greek gods and the Roman gods are fighting a terrible war, the Titan Lord Kronos is beginning his attack on New York City, and a whole lot of monsters are being let out of the underworld. Percy and his friends must set out on a quest to find the Golden Fleece and to stop Kronos, who is on a quest of his own to find the master bolt and free the Titans from their prison on Mount Olympus.",
+    "image_file": "978-1-60309-453-5.jpg"
+  },
+  {
+    "isbn": "978-1-60309-455-9",
+    "title": "The Battle of the Labyrinth",
+    "authors": [
+      {
+        "firstname": "Rick",
+        "lastname": "Riordan"
+      },
+      {
+        "firstname": "John",
+        "lastname": "Rocco"
+      }
+    ],
+    "publisher": {
+        "name": "Disney Hyperion",
+        "address": "New York"
+    },
+    "genre": "Fiction",
+    "price": 12.50,
+    "year": 2008,
+    "num_pages": 304,
+    "short_description": "The fourth book in the Percy Jackson and the Olympians series.",
+    "long_description": "The fourth book in the Percy Jackson and the Olympians series. Percy Jackson and his friends are still at Camp Half-Blood, but they are no longer safe. The Greek gods and the Roman gods are fighting a terrible war, the Titan Lord Kronos is beginning his attack on New York City, and a whole lot of monsters are being let out of the underworld. Percy and his friends must set out on a quest to find the Golden Fleece and to stop Kronos, who is on a quest of his own to find the master bolt and free the Titans from their prison on Mount Olympus.",
+    "image_file": "978-1-60309-455-9.jpg"
+  },
+  {
+    "isbn": "978-1-60309-458-0",
+    "title": "Warrior Cats: The Prophecies Begin",
+    "authors": [
+      {
+        "firstname": "Erin",
+        "lastname": "Hunter"
+      }
+    ],
+    "publisher": {
+        "name": "HarperCollins",
+        "address": "New York"
+    },
+    "genre": "Fiction",
+    "price": 12.50,
+    "year": 2003,
+    "num_pages": 336,
+    "short_description": "The first book in the Warriors series.",
+    "long_description": "The first book in the Warriors series. The forest is a dangerous place for a young cat. Fireheart, a ThunderClan warrior, is about to find out how dangerous. He is forced to leave his home and family behind to face the perils of the forest alone. He must learn to trust his instincts and his heart if he is to survive.",
+    "image_file": "978-1-60309-458-0.jpg"
+  },
+  {
+    "isbn": "978-1-60309-459-7",
+    "title": "Warrior Cats: The New Prophecy",
+    "authors": [
+      {
+        "firstname": "Erin",
+        "lastname": "Hunter"
+      }
+    ],
+    "publisher": {
+        "name": "HarperCollins",
+        "address": "New York"
+    },
+    "genre": "Fiction",
+    "price": 12.50,
+    "year": 2004,
+    "num_pages": 336,
+    "short_description": "The second book in the Warriors series.",
+    "long_description": "The second book in the Warriors series. The forest is a dangerous place for a young cat. Fireheart, a ThunderClan warrior, is about to find out how dangerous. He is forced to leave his home and family behind to face the perils of the forest alone. He must learn to trust his instincts and his heart if he is to survive.",
+    "image_file": "978-1-60309-459-7.jpg"
+  },
+  {
+    "isbn": "978-1-60309-460-3",
+    "title": "Warrior Cats: The Power of Three",
+    "authors": [
+      {
+        "firstname": "Erin",
+        "lastname": "Hunter"
+      }
+    ],
+    "publisher": {
+        "name": "HarperCollins",
+        "address": "New York"
+    },
+    "genre": "Fiction",
+    "price": 12.50,
+    "year": 2005,
+    "num_pages": 336,
+    "short_description": "The third book in the Warriors series.",
+    "long_description": "A new prophecy is about to happen. The Power of Tree is a saga of three cats who must save the forest. The forest is a dangerous place for a young cat. Fireheart, a ThunderClan warrior, is about to find out how dangerous. He is forced to leave his home and family behind to face the perils of the forest alone. He must learn to trust his instincts and his heart if he is to survive.",
+    "image_file": "978-1-60309-460-3.jpg"
+  },
+  {
+    "isbn": "978-1-60309-461-0",
+    "title": "Warrior Cats: Omen of the Stars",
+    "authors": [
+      {
+        "firstname": "Erin",
+        "lastname": "Hunter"
+      }
+    ],
+    "publisher": {
+        "name": "HarperCollins",
+        "address": "New York"
+    },
+    "genre": "Fiction",
+    "price": 12.50,
+    "year": 2006,
+    "num_pages": 336,
+    "short_description": "The fourth book in the Warriors series.",
+    "long_description": "The forest is a dangerous place for a young cat. Fireheart, a ThunderClan warrior, is about to find out how dangerous. He is forced to leave his home and family behind to face the perils of the forest alone. He must learn to trust his instincts and his heart if he is to survive.",
+    "image_file": "978-1-60309-461-0.jpg"
+  },
+  {
+    "isbn": "978-1-60309-462-7",
+    "title": "Learning Domain Driven Design",
+    "authors": [
+      {
+        "firstname": "Eric",
+        "lastname": "Evans"
+      }
+    ],
+    "publisher": {
+        "name": "Addison-Wesley",
+        "address": "Boston"
+    },
+    "genre": "NonFiction",
+    "price": 12.50,
+    "year": 2013,
+    "num_pages": 320,
+    "short_description": "A book about Domain Driven Design.",
+    "long_description": "A book about Domain Driven Design. Domain-driven design is a software development approach that focuses on the core domain and domain logic rather than technical infrastructure. It is a way of thinking about software design that emphasizes ubiquitous language, bounded contexts, domain events, and other techniques that promote software that is easy to understand and change.",
+    "image_file": "978-1-60309-462-7.jpg"
+  },
+  {
+    "isbn": "978-1-60309-463-4",
+    "title": "The C Programming Language",
+    "authors": [
+      {
+        "firstname": "Brian",
+        "lastname": "Kernighan"
+      },
+      {
+        "firstname": "Dennis",
+        "lastname": "Ritchie"
+      }
+    ],
+    "publisher": {
+        "name": "Prentice Hall",
+        "address": "Upper Saddle River"
+    },
+    "genre": "NonFiction",
+    "price": 12.50,
+    "year": 1988,
+    "num_pages": 288,
+    "short_description": "The book that started it all.",
+    "long_description": "The book that started it all. The C Programming Language is a computer programming book written by Brian Kernighan and Dennis Ritchie, the latter of whom originally designed and implemented the language, as well as co-designed the Unix operating system with which development of the language was closely intertwined. The book was used as the basis for a course on the C programming language at Bell Labs.",
+    "image_file": "978-1-60309-463-4.jpg"
+  }
+]
