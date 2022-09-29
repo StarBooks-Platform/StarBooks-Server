@@ -1,12 +1,24 @@
-use tokio::sync::mpsc;
+use std::sync::Arc;
+use mediator::{AsyncMediator, DefaultAsyncMediator};
+use tokio::sync::{mpsc, Mutex};
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
+use crate::GetPagedBooksQuery;
 
-use crate::grpc::{BookDto, GetBooksRequest, GetBooksResponse, Author, Genre};
+use crate::grpc::{GetBooksRequest, GetBooksResponse};
 use crate::grpc::catalog_service_server::CatalogService;
 
-#[derive(Default)]
-pub struct BookCatalogServiceImpl {}
+pub struct BookCatalogServiceImpl {
+    mediator: Arc<Mutex<DefaultAsyncMediator>>,
+}
+
+impl BookCatalogServiceImpl {
+    pub fn new(mediator: Arc<Mutex<DefaultAsyncMediator>>) -> Self {
+        BookCatalogServiceImpl {
+            mediator
+        }
+    }
+}
 
 #[tonic::async_trait]
 impl CatalogService for BookCatalogServiceImpl {
@@ -16,34 +28,31 @@ impl CatalogService for BookCatalogServiceImpl {
                        -> Result<Response<Self::GetBooksStream>, Status> {
         println!("Request from {:?}", request.remote_addr());
 
-        let (tx, rx) = mpsc::channel(4);
-        tokio::spawn(async move {
-            for i in 0..10 {
-                tx.send(Ok(GetBooksResponse {
-                    book: Some(BookDto {
-                        isbn: i.to_string(),
-                        title: format!("Book {}", i),
-                        publisher_name: format!("Publisher {}", i),
-                        authors: vec![
-                            Author {
-                                first_name: format!("Author {}", i),
-                                last_name: format!("Last {}", i),
-                            },
-                            Author {
-                                first_name: format!("Author {}", i),
-                                last_name: format!("Last {}", i),
-                            }
-                        ],
-                        genre: Genre::Fiction as i32,
-                        short_description: format!("Short description {}", i),
-                        price: i as f64,
-                        cover_image: vec![],
-                        release_year: i,
-                    })
-                })).await.unwrap();
-            }
-        });
+        let mut mediator = self.mediator.lock().await;
+        let books = mediator
+            .send(GetPagedBooksQuery {
+                page: request.get_ref().page,
+                page_size: request.get_ref().page_size,
+            })
+            .await;
 
-        Ok(Response::new(ReceiverStream::new(rx)))
+        match books {
+            Ok(books) => {
+                let (tx, rx) = mpsc::channel(100);
+                tokio::spawn(async move {
+                    for book in books.unwrap() {
+                        tx.send(Ok(
+                            GetBooksResponse {
+                                book: Some(book),
+                            }))
+                            .await
+                            .unwrap();
+                    }
+                });
+
+                Ok(Response::new(ReceiverStream::new(rx)))
+            }
+            Err(_) => Err(Status::internal("Error")),
+        }
     }
 }

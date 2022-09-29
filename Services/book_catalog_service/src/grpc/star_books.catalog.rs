@@ -1,5 +1,9 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBooksRequest {
+    #[prost(uint32, tag="1")]
+    pub page: u32,
+    #[prost(uint32, tag="2")]
+    pub page_size: u32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBooksResponse {
@@ -31,8 +35,8 @@ pub struct BookDto {
     pub price: f64,
     #[prost(bytes="vec", tag="8")]
     pub cover_image: ::prost::alloc::vec::Vec<u8>,
-    #[prost(int32, tag="9")]
-    pub release_year: i32,
+    #[prost(uint32, tag="9")]
+    pub release_year: u32,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

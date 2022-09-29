@@ -3,6 +3,8 @@ syntax = "proto3";
 package star_books.catalog;
 
 message GetBooksRequest {
+  uint32 page = 1;
+  uint32 page_size = 2;
 }
 
 message GetBooksResponse {
@@ -35,5 +37,5 @@ message BookDto {
   string short_description = 6;
   double price = 7;
   bytes cover_image = 8;
-  int32 release_year = 9;
+  uint32 release_year = 9;
 }
