@@ -4,7 +4,7 @@ pub struct GetBooksRequest {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBooksResponse {
     #[prost(message, optional, tag="1")]
-    pub book: ::core::option::Option<Book>,
+    pub book: ::core::option::Option<BookDto>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Author {
@@ -14,7 +14,7 @@ pub struct Author {
     pub last_name: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Book {
+pub struct BookDto {
     #[prost(string, tag="1")]
     pub isbn: ::prost::alloc::string::String,
     #[prost(string, tag="2")]

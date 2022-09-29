@@ -1,24 +1,26 @@
 use std::fmt;
 use std::fmt::Formatter;
-use domain_patterns::models::Entity;
+use domain_patterns::models::{Entity, ValueObject};
 use isbnid::isbn::ISBN;
 use mongodb::bson::oid::ObjectId;
-use crate::BookModel;
-use crate::domain::author::Author;
+use crate::domain::book::author::Author;
+use crate::domain::book::publisher::Publisher;
 use crate::domain::core::errors::ValidationError;
-use crate::domain::core::vvos::RblStringVVO;
-use crate::domain::publisher::Publisher;
-use crate::infrastructure::book_model::Asset;
+use crate::domain::core::vvos::RblStringVvo;
+use crate::grpc::{BookDto, Genre};
+use crate::infrastructure::book::book_model::{Asset, BookModel};
 
 #[derive(Debug)]
 pub struct Book {
     pub id: ObjectId,
     pub isbn: ISBNWrapper,
-    pub title: RblStringVVO<5, 50>,
+    pub title: RblStringVvo<5, 50>,
     pub authors: Option<Vec<Author>>,
     pub publisher: Publisher,
-    pub short_description: RblStringVVO<10, 500>,
-    pub long_description: RblStringVVO<50, 2000>,
+    pub short_description: RblStringVvo<10, 500>,
+    pub long_description: RblStringVvo<50, 2000>,
+    pub price: f64,
+    pub genre: Genre,
     pub year: u32,
     pub num_pages: u32,
     pub cover_image: Option<Vec<u8>>,
@@ -56,7 +58,7 @@ impl TryFrom<BookModel> for Book {
             message: format!("BookModel must have a valid isbn: {}", value.isbn.as_str())
         })?;
 
-        let title = RblStringVVO::try_from(value.title)
+        let title = RblStringVvo::try_from(value.title)
             .map_err(|e| ValidationError {
             message: format!("BookModel must have a valid title: {} Book ISBN: {}",
                              e.message.as_str(),
@@ -87,19 +89,21 @@ impl TryFrom<BookModel> for Book {
             message: format!("BookModel must have a valid publisher: {}", e.message.as_str())
         })?;
 
-        let short_description = RblStringVVO::try_from(value.short_description)
+        let short_description = RblStringVvo::try_from(value.short_description)
             .map_err(|e| ValidationError {
             message: format!("BookModel must have a valid short_description: {} Book ISBN: {}",
                              e.message.as_str(),
                              value.isbn.as_str())
         })?;
-        let long_description = RblStringVVO::try_from(value.long_description)
+        let long_description = RblStringVvo::try_from(value.long_description)
             .map_err(|e| ValidationError {
             message: format!("BookModel must have a valid long_description: {} Book ISBN: {}",
                              e.message.as_str(),
                              value.isbn.as_str())
         })?;
 
+        let price = value.price;
+        let genre: Genre = value.genre.into();
         let year = value.year;
         let num_pages = value.num_pages;
         let cover_image = Asset::get(&value.cover_image.unwrap_or_else(|| "default.jpg".to_string()))
@@ -118,9 +122,31 @@ impl TryFrom<BookModel> for Book {
             publisher,
             short_description,
             long_description,
+            price,
+            genre,
             year,
             num_pages,
             cover_image: cover_image.into(),
         })
+    }
+}
+
+impl Into<BookDto> for Book {
+    fn into(self) -> BookDto {
+        BookDto {
+            isbn: self.isbn.0.isbn13(),
+            title: self.title.value(),
+            publisher_name: self.publisher.name.value(),
+            authors: self.authors
+                .unwrap_or_else(|| vec![])
+                .into_iter()
+                .map(|a| a.into())
+                .collect(),
+            genre: self.genre.into(),
+            short_description: self.short_description.value(),
+            price: self.price,
+            cover_image: self.cover_image.unwrap_or_else(|| vec![]),
+            release_year: self.year as i32,
+        }
     }
 }

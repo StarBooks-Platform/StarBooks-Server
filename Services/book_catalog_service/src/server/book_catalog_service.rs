@@ -2,7 +2,7 @@ use tokio::sync::mpsc;
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
-use crate::grpc::{Book, GetBooksRequest, GetBooksResponse, Author, Genre};
+use crate::grpc::{BookDto, GetBooksRequest, GetBooksResponse, Author, Genre};
 use crate::grpc::catalog_service_server::CatalogService;
 
 #[derive(Default)]
@@ -20,7 +20,7 @@ impl CatalogService for BookCatalogServiceImpl {
         tokio::spawn(async move {
             for i in 0..10 {
                 tx.send(Ok(GetBooksResponse {
-                    book: Some(Book {
+                    book: Some(BookDto {
                         isbn: i.to_string(),
                         title: format!("Book {}", i),
                         publisher_name: format!("Publisher {}", i),

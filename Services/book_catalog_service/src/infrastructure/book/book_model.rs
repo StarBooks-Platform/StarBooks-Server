@@ -1,6 +1,7 @@
 use mongodb::bson::oid::ObjectId;
 use serde::{Serialize, Deserialize};
 use rust_embed::RustEmbed;
+use crate::grpc::Genre;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BookModel {
@@ -16,7 +17,7 @@ pub struct BookModel {
     pub num_pages: u32,
     #[serde(rename = "image_file")]
     pub cover_image: Option<String>,
-    pub price: f32,
+    pub price: f64,
     pub genre: GenreModel,
 }
 
@@ -41,6 +42,18 @@ pub enum GenreModel {
     Science = 2,
     Fiction = 3,
     NonFiction = 4,
+}
+
+impl Into<Genre> for GenreModel {
+    fn into(self) -> Genre {
+        match self {
+            GenreModel::Unknown => Genre::Unknown,
+            GenreModel::ScienceFiction => Genre::ScienceFiction,
+            GenreModel::Science => Genre::Science,
+            GenreModel::Fiction => Genre::Fiction,
+            GenreModel::NonFiction => Genre::NonFiction,
+        }
+    }
 }
 
 #[derive(RustEmbed)]

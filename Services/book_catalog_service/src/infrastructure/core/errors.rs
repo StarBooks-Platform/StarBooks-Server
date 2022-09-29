@@ -17,7 +17,7 @@ pub enum InfrastructureError {
 }
 
 impl InfrastructureError {
-    fn name(&self) -> String {
+    pub fn name(&self) -> String {
         match self {
             InfrastructureError::MongoDbError { .. } => "MongoDbError".to_string(),
             InfrastructureError::NoEntityFoundError { .. } => "NoEntityFoundError".to_string(),

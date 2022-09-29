@@ -1,9 +1,9 @@
 use mongodb::Client;
-use crate::domain::book_entity::Book;
-use crate::domain::i_repository::IRepository;
+use crate::domain::core::i_repository::IRepository;
 use async_trait::async_trait;
 use tokio_stream::StreamExt;
-use crate::BookModel;
+use crate::domain::book::book_entity::Book;
+use crate::infrastructure::book::book_model::BookModel;
 use crate::infrastructure::core::errors::InfrastructureError;
 
 #[derive(Clone, Debug)]

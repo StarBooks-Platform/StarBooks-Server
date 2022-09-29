@@ -8,10 +8,11 @@ edition = "2021"
 [dependencies]
 async-trait = "0.1.57"
 base64 = "0.13.0"
-derive_more = "0.99.17"
+derive_more = { version = "0.99.17", features = ["display"] }
 domain_patterns = "0.2.141"
 futures = "0.3.24"
 isbnid = "0.1.3"
+mediator = { version = "0.2.2", features = ["async", "async-trait"] }
 mongodb = "2.3.0"
 prost = "0.11.0"
 rust-embed = { version = "6.4.1", features = ["debug-embed"] }
