@@ -44,9 +44,9 @@ pub enum GenreModel {
     NonFiction = 4,
 }
 
-impl Into<Genre> for GenreModel {
-    fn into(self) -> Genre {
-        match self {
+impl From<GenreModel> for Genre {
+    fn from(genre: GenreModel) -> Self {
+        match genre {
             GenreModel::Unknown => Genre::Unknown,
             GenreModel::ScienceFiction => Genre::ScienceFiction,
             GenreModel::Science => Genre::Science,

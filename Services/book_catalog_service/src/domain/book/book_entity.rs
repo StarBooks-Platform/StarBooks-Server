@@ -55,15 +55,15 @@ impl TryFrom<BookModel> for Book {
         })?;
         let isbn = ISBN::new(value.isbn.as_str())
             .map_err(|_| ValidationError {
-            message: format!("BookModel must have a valid isbn: {}", value.isbn.as_str())
-        })?;
+                message: format!("BookModel must have a valid isbn: {}", value.isbn.as_str())
+            })?;
 
         let title = RblStringVvo::try_from(value.title)
             .map_err(|e| ValidationError {
-            message: format!("BookModel must have a valid title: {} Book ISBN: {}",
-                             e.message.as_str(),
-                             value.isbn.as_str())
-        })?;
+                message: format!("BookModel must have a valid title: {} Book ISBN: {}",
+                                 e.message.as_str(),
+                                 value.isbn.as_str())
+            })?;
 
         let authors: Vec<Result<Author, ValidationError>> = value.authors
             .unwrap_or_default()
@@ -86,29 +86,34 @@ impl TryFrom<BookModel> for Book {
 
         let publisher = Publisher::try_from(value.publisher)
             .map_err(|e| ValidationError {
-            message: format!("BookModel must have a valid publisher: {}", e.message.as_str())
-        })?;
+                message: format!("BookModel must have a valid publisher: {}", e.message.as_str())
+            })?;
 
         let short_description = RblStringVvo::try_from(value.short_description)
             .map_err(|e| ValidationError {
-            message: format!("BookModel must have a valid short_description: {} Book ISBN: {}",
-                             e.message.as_str(),
-                             value.isbn.as_str())
-        })?;
+                message: format!("BookModel must have a valid short_description: {} Book ISBN: {}",
+                                 e.message.as_str(),
+                                 value.isbn.as_str())
+            })?;
         let long_description = RblStringVvo::try_from(value.long_description)
             .map_err(|e| ValidationError {
-            message: format!("BookModel must have a valid long_description: {} Book ISBN: {}",
-                             e.message.as_str(),
-                             value.isbn.as_str())
-        })?;
+                message: format!("BookModel must have a valid long_description: {} Book ISBN: {}",
+                                 e.message.as_str(),
+                                 value.isbn.as_str())
+            })?;
 
         let price = value.price;
         let genre: Genre = value.genre.into();
         let year = value.year;
         let num_pages = value.num_pages;
-        let cover_image = Asset::get(&value.cover_image.unwrap_or_else(|| "default.jpg".to_string()))
-            .unwrap_or_else(|| panic!("Failed to load cover image for book with ISBN: {}", value.isbn.as_str()))
-            .data.to_vec();
+        let cover_image = match Asset::get(
+            &value.cover_image.unwrap_or_default()
+        ) {
+            Some(asset) => Some(asset.data.to_vec()),
+            None => Some(Asset::get("default.jpg")
+                .unwrap()
+                .data.to_vec())
+        };
 
         Ok(Book {
             id,
@@ -126,27 +131,27 @@ impl TryFrom<BookModel> for Book {
             genre,
             year,
             num_pages,
-            cover_image: cover_image.into(),
+            cover_image,
         })
     }
 }
 
-impl Into<BookDto> for Book {
-    fn into(self) -> BookDto {
+impl From<Book> for BookDto {
+    fn from(value: Book) -> Self {
         BookDto {
-            isbn: self.isbn.0.isbn13(),
-            title: self.title.value(),
-            publisher_name: self.publisher.name.value(),
-            authors: self.authors
-                .unwrap_or_else(|| vec![])
+            isbn: value.isbn.0.isbn13(),
+            title: value.title.value(),
+            publisher_name: value.publisher.name.value(),
+            authors: value.authors
+                .unwrap_or_default()
                 .into_iter()
-                .map(|a| a.into())
+                .map(crate::grpc::Author::from)
                 .collect(),
-            genre: self.genre.into(),
-            short_description: self.short_description.value(),
-            price: self.price,
-            cover_image: self.cover_image.unwrap_or_else(|| vec![]),
-            release_year: self.year as i32,
+            genre: value.genre.into(),
+            short_description: value.short_description.value(),
+            price: value.price,
+            cover_image: value.cover_image.unwrap_or_default(),
+            release_year: value.year,
         }
     }
 }

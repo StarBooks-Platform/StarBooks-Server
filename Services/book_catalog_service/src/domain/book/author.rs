@@ -29,11 +29,11 @@ impl TryFrom<AuthorModel> for Author {
     }
 }
 
-impl Into<crate::grpc::Author> for Author {
-    fn into(self) -> crate::grpc::Author {
-        crate::grpc::Author {
-            first_name: self.first_name.value(),
-            last_name: self.last_name.value(),
+impl From<Author> for crate::grpc::Author {
+    fn from(value: Author) -> Self {
+        Self {
+            first_name: value.first_name.value(),
+            last_name: value.last_name.value(),
         }
     }
 }
