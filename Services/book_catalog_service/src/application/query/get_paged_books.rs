@@ -28,6 +28,7 @@ impl GetPagedBooksHandler {
 impl AsyncRequestHandler<GetPagedBooksQuery, Option<Vec<BookDto>>> for GetPagedBooksHandler {
     async fn handle(&mut self, req: GetPagedBooksQuery) -> Option<Vec<BookDto>> {
         let repository = self.repository.lock().await;
+        //TODO: add proper error handling
         let books = repository.get_paged(req.page, req.page_size).await.unwrap();
         let books = books.unwrap();
 

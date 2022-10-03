@@ -52,6 +52,7 @@ impl CatalogService for BookCatalogServiceImpl {
 
                 Ok(Response::new(ReceiverStream::new(rx)))
             }
+            //TODO: add proper RPC Error handling(status)
             Err(_) => Err(Status::internal("Error")),
         }
     }

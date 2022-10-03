@@ -37,6 +37,7 @@ impl BookRepository {
 impl IRepository<Book> for BookRepository {
     type Error = InfrastructureError;
 
+    //TODO: do not fail the entire transaction if one book entity is invalid
     async fn get_paged(&self, page: u32, page_size: u32) -> Result<Option<Vec<Book>>, Self::Error> {
         let collection = self.get_books_collection();
 
@@ -44,7 +45,7 @@ impl IRepository<Book> for BookRepository {
         let mut cursor = collection
             .find(None, None)
             .await
-            .map_err(|e| InfrastructureError::MongoDbError {
+            .map_err(|e| InfrastructureError::MongoDb {
                 message: e.to_string(),
             })?;
 
@@ -53,12 +54,12 @@ impl IRepository<Book> for BookRepository {
         while let Some(result) = cursor.next().await {
             if count >= skip && count < skip + page_size {
                 let book = result
-                    .map_err(|e| InfrastructureError::MongoDbError { 
+                    .map_err(|e| InfrastructureError::MongoDb {
                         message: e.to_string(), 
                     })?;
                 
                 books.push(Book::try_from(book)
-                    .map_err(|e| InfrastructureError::InvalidEntityFoundError { 
+                    .map_err(|e| InfrastructureError::InvalidEntityFound {
                         message: e.to_string(), 
                     })?
                 );

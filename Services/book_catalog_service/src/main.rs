@@ -7,23 +7,37 @@ use crate::application::query::get_paged_books::{GetPagedBooksHandler, GetPagedB
 use crate::grpc::catalog_service_server::CatalogServiceServer;
 use crate::infrastructure::book::book_repository::BookRepository;
 use crate::server::book_catalog_service::BookCatalogServiceImpl;
+use config::{GrpcConfiguration, MongoConfiguration};
 
 mod grpc;
 mod server;
 mod infrastructure;
 mod domain;
 mod application;
+mod config;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let addr = "0.0.0.0:5001".parse().unwrap();
+    dotenv::dotenv().ok();
+
+    let grpc_config = envy::prefixed("GRPC_")
+        .from_env::<GrpcConfiguration>()
+        .expect("Please provide GRPC_HOST and GRPC_PORT environment variables");
+
+    let addr = grpc_config.uri().parse()?;
+
+    let mongo_config = envy::prefixed("MONGO_")
+        .from_env::<MongoConfiguration>()
+        .expect("Please provide MONGO_HOST, MONGO_PORT, MONGO_DB, \
+        MONGO_COLLECTION, MONGO_USER and MONGO_PASS environment variables");
 
     let book_repository = BookRepository::new(
-        String::from("mongodb://localhost:27017"),
-        String::from("catalog_db"),
-        String::from("book"),
+        mongo_config.uri(),
+        mongo_config.database,
+        mongo_config.collection,
     ).await;
 
+    //TODO: add dependency injection
     let repository = Arc::new(Mutex::new(book_repository));
     let mediator = DefaultAsyncMediator::builder()
         .add_handler(GetPagedBooksHandler::new(repository))

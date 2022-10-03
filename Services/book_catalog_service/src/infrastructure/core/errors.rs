@@ -1,17 +1,18 @@
 use derive_more::{Display, Error};
 
+//TODO: add more error types
 #[derive(Debug, Display, Error)]
 pub enum InfrastructureError {
     #[display(fmt = message)]
-    MongoDbError {
+    MongoDb {
         message: String,
     },
     #[display(fmt = message)]
-    NoEntityFoundError {
+    NoEntityFound {
         message: String,
     },
     #[display(fmt = message)]
-    InvalidEntityFoundError {
+    InvalidEntityFound {
         message: String,
     }
 }
@@ -19,9 +20,9 @@ pub enum InfrastructureError {
 impl InfrastructureError {
     pub fn name(&self) -> String {
         match self {
-            InfrastructureError::MongoDbError { .. } => "MongoDbError".to_string(),
-            InfrastructureError::NoEntityFoundError { .. } => "NoEntityFoundError".to_string(),
-            InfrastructureError::InvalidEntityFoundError { .. } => "InvalidEntityFoundError".to_string(),
+            InfrastructureError::MongoDb { .. } => "MongoDbError".to_string(),
+            InfrastructureError::NoEntityFound { .. } => "NoEntityFoundError".to_string(),
+            InfrastructureError::InvalidEntityFound { .. } => "InvalidEntityFoundError".to_string(),
         }
     }
 }
