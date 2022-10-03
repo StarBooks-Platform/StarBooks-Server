@@ -4,6 +4,7 @@ use serde::Deserialize;
 pub struct GrpcConfiguration {
     host: String,
     port: u16,
+    pub buffer_size: u32,
 }
 
 impl GrpcConfiguration {

@@ -46,7 +46,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let book_catalog_service = BookCatalogServiceImpl::new(
         Arc::new(
             Mutex::new(mediator)
-        )
+        ),
+        grpc_config,
     );
 
     println!("Server listening on {}", addr);

@@ -3,19 +3,21 @@ use mediator::{AsyncMediator, DefaultAsyncMediator};
 use tokio::sync::{mpsc, Mutex};
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
-use crate::GetPagedBooksQuery;
+use crate::{GetPagedBooksQuery, GrpcConfiguration};
 
 use crate::grpc::{GetBooksRequest, GetBooksResponse};
 use crate::grpc::catalog_service_server::CatalogService;
 
 pub struct BookCatalogServiceImpl {
     mediator: Arc<Mutex<DefaultAsyncMediator>>,
+    grpc_config: GrpcConfiguration,
 }
 
 impl BookCatalogServiceImpl {
-    pub fn new(mediator: Arc<Mutex<DefaultAsyncMediator>>) -> Self {
+    pub fn new(mediator: Arc<Mutex<DefaultAsyncMediator>>, grpc_config: GrpcConfiguration) -> Self {
         BookCatalogServiceImpl {
-            mediator
+            mediator,
+            grpc_config,
         }
     }
 }
@@ -38,7 +40,7 @@ impl CatalogService for BookCatalogServiceImpl {
 
         match books {
             Ok(books) => {
-                let (tx, rx) = mpsc::channel(100);
+                let (tx, rx) = mpsc::channel(self.grpc_config.buffer_size as usize);
                 tokio::spawn(async move {
                     for book in books.unwrap() {
                         tx.send(Ok(
