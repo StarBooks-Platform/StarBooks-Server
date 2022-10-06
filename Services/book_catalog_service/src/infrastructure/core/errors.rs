@@ -2,7 +2,7 @@ use derive_more::{Display, Error};
 
 //TODO: add more error types
 #[derive(Debug, Display, Error)]
-pub enum InfrastructureError {
+pub enum ServerError {
     #[display(fmt = message)]
     MongoDb {
         message: String,
@@ -17,12 +17,12 @@ pub enum InfrastructureError {
     }
 }
 
-impl InfrastructureError {
+impl ServerError {
     pub fn name(&self) -> String {
         match self {
-            InfrastructureError::MongoDb { .. } => "MongoDbError".to_string(),
-            InfrastructureError::NoEntityFound { .. } => "NoEntityFoundError".to_string(),
-            InfrastructureError::InvalidEntityFound { .. } => "InvalidEntityFoundError".to_string(),
+            ServerError::MongoDb { .. } => "MongoDbError".to_string(),
+            ServerError::NoEntityFound { .. } => "NoEntityFoundError".to_string(),
+            ServerError::InvalidEntityFound { .. } => "InvalidEntityFoundError".to_string(),
         }
     }
 }

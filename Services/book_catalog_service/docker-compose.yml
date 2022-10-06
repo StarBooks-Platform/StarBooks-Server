@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     ports:
-      - "50051:50051"
+      - "50051:${GRPC_PORT}"
     restart: always
     depends_on:
       - mongodb
@@ -18,7 +18,7 @@ services:
     image: mongo:latest
     container_name: mongodb
     ports:
-      - "27018:27017"
+      - "27018:${MONGO_PORT}"
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_USER

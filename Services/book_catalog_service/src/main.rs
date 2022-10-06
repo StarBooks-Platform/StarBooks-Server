@@ -18,7 +18,7 @@ mod config;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    dotenv::dotenv().ok();
+    dotenv::from_filename(".env.local").ok();
 
     let grpc_config = envy::prefixed("GRPC_")
         .from_env::<GrpcConfiguration>()

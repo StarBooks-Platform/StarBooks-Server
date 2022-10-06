@@ -26,8 +26,7 @@ impl BookCatalogServiceImpl {
 impl CatalogService for BookCatalogServiceImpl {
     type GetBooksStream = ReceiverStream<Result<GetBooksResponse, Status>>;
 
-    async fn get_books(&self, request: Request<GetBooksRequest>)
-                       -> Result<Response<Self::GetBooksStream>, Status> {
+    async fn get_books(&self, request: Request<GetBooksRequest>) -> Result<Response<Self::GetBooksStream>, Status> {
         println!("Request from {:?}", request.remote_addr());
 
         let mut mediator = self.mediator.lock().await;
@@ -39,23 +38,41 @@ impl CatalogService for BookCatalogServiceImpl {
             .await;
 
         match books {
+            // no mediator related error occurred
             Ok(books) => {
+                // init buffer streaming for books
                 let (tx, rx) = mpsc::channel(self.grpc_config.buffer_size as usize);
-                tokio::spawn(async move {
-                    for book in books.unwrap() {
-                        tx.send(Ok(
-                            GetBooksResponse {
-                                book: Some(book),
-                            }))
-                            .await
-                            .unwrap();
-                    }
-                });
+                match books {
+                    // no server related error occurred
+                    Ok(books) => {
+                        match books {
+                            // books found
+                            Some(books) => {
+                                tokio::spawn(async move {
+                                    for book in books {
+                                        let send_book_response = tx.send(Ok(
+                                            GetBooksResponse {
+                                                book: Some(book),
+                                            }))
+                                            .await;
 
-                Ok(Response::new(ReceiverStream::new(rx)))
+                                        if send_book_response.is_err() {
+                                            continue;
+                                        }
+                                    }
+                                });
+                                Ok(Response::new(ReceiverStream::new(rx)))
+                            }
+                            // no books found
+                            None => Err(Status::not_found("No books found")),
+                        }
+                    }
+                    // server related error occurred
+                    Err(e) => Err(Status::internal(e.name())),
+                }
             }
-            //TODO: add proper RPC Error handling(status)
-            Err(_) => Err(Status::internal("Error")),
+            // mediator related error occurred
+            Err(err) => Err(Status::internal(err.to_string())),
         }
     }
 }

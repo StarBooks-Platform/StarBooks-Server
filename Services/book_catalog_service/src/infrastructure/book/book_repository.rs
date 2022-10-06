@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use tokio_stream::StreamExt;
 use crate::domain::book::book_entity::Book;
 use crate::infrastructure::book::book_model::BookModel;
-use crate::infrastructure::core::errors::InfrastructureError;
+use crate::infrastructure::core::errors::ServerError;
 
 #[derive(Clone, Debug)]
 pub struct BookRepository {
@@ -35,17 +35,16 @@ impl BookRepository {
 
 #[async_trait]
 impl IRepository<Book> for BookRepository {
-    type Error = InfrastructureError;
+    type Error = ServerError;
 
-    //TODO: do not fail the entire transaction if one book entity is invalid
-    async fn get_paged(&self, page: u32, page_size: u32) -> Result<Option<Vec<Book>>, Self::Error> {
+    async fn get_paged(&self, page: u32, page_size: u32) -> Result<Option<Vec<Result<Book, Self::Error>>>, Self::Error> {
         let collection = self.get_books_collection();
 
         let skip = (page - 1) * page_size;
         let mut cursor = collection
             .find(None, None)
             .await
-            .map_err(|e| InfrastructureError::MongoDb {
+            .map_err(|e| ServerError::MongoDb {
                 message: e.to_string(),
             })?;
 
@@ -54,19 +53,22 @@ impl IRepository<Book> for BookRepository {
         while let Some(result) = cursor.next().await {
             if count >= skip && count < skip + page_size {
                 let book = result
-                    .map_err(|e| InfrastructureError::MongoDb {
+                    .map_err(|e| ServerError::MongoDb {
                         message: e.to_string(), 
                     })?;
                 
                 books.push(Book::try_from(book)
-                    .map_err(|e| InfrastructureError::InvalidEntityFound {
+                    .map_err(|e| ServerError::InvalidEntityFound {
                         message: e.to_string(), 
-                    })?
+                    })
                 );
             }
             count += 1;
         }
 
-        Ok(Some(books))
+        match books.is_empty() {
+            true => Ok(None),
+            false => Ok(Some(books)),
+        }
     }
 }
