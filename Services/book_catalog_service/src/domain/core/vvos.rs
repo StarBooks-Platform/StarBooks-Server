@@ -26,7 +26,7 @@ for RblStringVvo<MIN_LENGTH, MAX_LENGTH> {
     fn validate(value: &String) -> Result<(), Self::ValueError> {
         if value.len() < MIN_LENGTH || value.len() > MAX_LENGTH {
             return Err(ValidationError {
-                message: format!("Length must be between {} and {}", MIN_LENGTH, MAX_LENGTH)
+                message: format!("Length must be between {} and {} characters long", MIN_LENGTH, MAX_LENGTH)
             });
         }
 

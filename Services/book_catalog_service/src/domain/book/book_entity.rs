@@ -7,7 +7,7 @@ use crate::domain::book::author::Author;
 use crate::domain::book::publisher::Publisher;
 use crate::domain::core::errors::ValidationError;
 use crate::domain::core::vvos::RblStringVvo;
-use crate::grpc::{BookDto, Genre};
+use crate::grpc::{AuthorDto, BookDto, Genre};
 use crate::infrastructure::book::book_model::{Asset, BookModel};
 
 #[derive(Debug)]
@@ -77,7 +77,7 @@ impl TryFrom<BookModel> for Book {
             match author {
                 Ok(_) => continue,
                 Err(e) => Err(ValidationError {
-                    message: format!("BookModel must have valid authors: {} Book ISBN: {}",
+                    message: format!("BookModel must have a valid list of authors: {} Book ISBN: {}",
                                      e.message.as_str(),
                                      value.isbn.as_str())
                 })?
@@ -86,7 +86,9 @@ impl TryFrom<BookModel> for Book {
 
         let publisher = Publisher::try_from(value.publisher)
             .map_err(|e| ValidationError {
-                message: format!("BookModel must have a valid publisher: {}", e.message.as_str())
+                message: format!("BookModel must have a valid publisher: {} Book ISBN: {}",
+                                 e.message.as_str(),
+                                 value.isbn.as_str())
             })?;
 
         let short_description = RblStringVvo::try_from(value.short_description)
@@ -102,6 +104,7 @@ impl TryFrom<BookModel> for Book {
                                  value.isbn.as_str())
             })?;
 
+        // TODO: add vvos for price, genre, year, num_pages
         let price = value.price;
         let genre: Genre = value.genre.into();
         let year = value.year;
@@ -145,7 +148,7 @@ impl From<Book> for BookDto {
             authors: value.authors
                 .unwrap_or_default()
                 .into_iter()
-                .map(crate::grpc::Author::from)
+                .map(AuthorDto::from)
                 .collect(),
             genre: value.genre.into(),
             short_description: value.short_description.value(),
@@ -153,5 +156,191 @@ impl From<Book> for BookDto {
             cover_image: value.cover_image.unwrap_or_default(),
             release_year: value.year,
         }
+    }
+}
+
+#[cfg(test)]
+mod book_entity_unit_tests {
+    use mongodb::bson::oid::ObjectId;
+    use crate::domain::book::book_entity::Book;
+    use crate::infrastructure::book::book_model::{AuthorModel, BookModel, GenreModel, PublisherModel};
+
+    #[test]
+    fn when_trying_to_create_a_book_from_a_book_model_with_an_invalid_isbn_then_an_error_is_returned() {
+        // Arrange
+        let book_model = BookModel {
+            id: Some(ObjectId::new()),
+            isbn: "123456789".to_string(),
+            title: "The Book of the Book".to_string(),
+            authors: None,
+            publisher: PublisherModel {
+                name: "The Publisher".to_string(),
+                address: "The Address".to_string(),
+            },
+            short_description: "The short description".to_string(),
+            long_description: "The long description is such a long description to write".to_string(),
+            price: 10.0,
+            genre: GenreModel::Fiction,
+            year: 2020,
+            num_pages: 100,
+            cover_image: None,
+        };
+
+        // Act
+        let result = Book::try_from(book_model);
+
+        // Assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap().message, "BookModel must have a valid isbn: 123456789");
+    }
+
+    #[test]
+    fn when_trying_to_create_a_book_from_a_book_model_with_an_invalid_title_then_an_error_is_returned() {
+        // Arrange
+        let book_model = BookModel {
+            id: Some(ObjectId::new()),
+            isbn: "978-3-16-148410-0".to_string(),
+            title: "The Book of the Book of the Book of the Book of the Book".to_string(),
+            authors: None,
+            publisher: PublisherModel {
+                name: "The Publisher".to_string(),
+                address: "The Address".to_string(),
+            },
+            short_description: "The short description".to_string(),
+            long_description: "The long description is such a long description to write".to_string(),
+            price: 10.0,
+            genre: GenreModel::Fiction,
+            year: 2020,
+            num_pages: 100,
+            cover_image: None,
+        };
+
+        // Act
+        let result = Book::try_from(book_model);
+
+        // Assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap().message, "BookModel must have a valid title: Length must be between 5 and 50 characters long Book ISBN: 978-3-16-148410-0");
+    }
+
+    #[test]
+    fn when_trying_to_create_a_book_from_a_book_model_with_an_invalid_list_of_authors_then_an_error_is_returned() {
+        // Arrange
+        let book_model = BookModel {
+            id: Some(ObjectId::new()),
+            isbn: "978-3-16-148410-0".to_string(),
+            title: "The Book of the Book".to_string(),
+            authors: Some(vec![
+                AuthorModel {
+                    first_name: "".to_string(),
+                    last_name: "The Last Name".to_string(),
+                }
+            ]),
+            publisher: PublisherModel {
+                name: "The Publisher".to_string(),
+                address: "The Address".to_string(),
+            },
+            short_description: "The short description".to_string(),
+            long_description: "The long description is such a long description to write".to_string(),
+            price: 10.0,
+            genre: GenreModel::Fiction,
+            year: 2020,
+            num_pages: 100,
+            cover_image: None,
+        };
+
+        // Act
+        let result = Book::try_from(book_model);
+
+        // Assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap().message, "BookModel must have a valid list of authors: AuthorModel.first_name is invalid: Length must be between 1 and 50 characters long Book ISBN: 978-3-16-148410-0");
+    }
+
+    #[test]
+    fn when_trying_to_create_a_book_from_a_book_model_with_an_invalid_publisher_name_then_an_error_is_returned() {
+        // Arrange
+        let book_model = BookModel {
+            id: Some(ObjectId::new()),
+            isbn: "978-3-16-148410-0".to_string(),
+            title: "The Book of the Book".to_string(),
+            authors: None,
+            publisher: PublisherModel {
+                name: "".to_string(),
+                address: "The Address".to_string(),
+            },
+            short_description: "The short description".to_string(),
+            long_description: "The long description is such a long description to write".to_string(),
+            price: 10.0,
+            genre: GenreModel::Fiction,
+            year: 2020,
+            num_pages: 100,
+            cover_image: None,
+        };
+
+        // Act
+        let result = Book::try_from(book_model);
+
+        // Assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap().message, "BookModel must have a valid publisher: PublisherModel.name is invalid: Length must be between 2 and 100 characters long Book ISBN: 978-3-16-148410-0");
+    }
+
+    #[test]
+    fn when_trying_to_create_a_book_from_a_book_model_with_an_invalid_short_description_then_an_error_is_returned() {
+        // Arrange
+        let book_model = BookModel {
+            id: Some(ObjectId::new()),
+            isbn: "978-3-16-148410-0".to_string(),
+            title: "The Book of the Book".to_string(),
+            authors: None,
+            publisher: PublisherModel {
+                name: "The Publisher".to_string(),
+                address: "The Address".to_string(),
+            },
+            short_description: "".to_string(),
+            long_description: "The long description is such a long description to write".to_string(),
+            price: 10.0,
+            genre: GenreModel::Fiction,
+            year: 2020,
+            num_pages: 100,
+            cover_image: None,
+        };
+
+        // Act
+        let result = Book::try_from(book_model);
+
+        // Assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap().message, "BookModel must have a valid short_description: Length must be between 10 and 500 characters long Book ISBN: 978-3-16-148410-0");
+    }
+
+    #[test]
+    fn when_trying_to_create_a_book_from_a_book_model_with_an_invalid_long_description_then_an_error_is_returned() {
+        // Arrange
+        let book_model = BookModel {
+            id: Some(ObjectId::new()),
+            isbn: "978-3-16-148410-0".to_string(),
+            title: "The Book of the Book".to_string(),
+            authors: None,
+            publisher: PublisherModel {
+                name: "The Publisher".to_string(),
+                address: "The Address".to_string(),
+            },
+            short_description: "The short description".to_string(),
+            long_description: "".to_string(),
+            price: 10.0,
+            genre: GenreModel::Fiction,
+            year: 2020,
+            num_pages: 100,
+            cover_image: None,
+        };
+
+        // Act
+        let result = Book::try_from(book_model);
+
+        // Assert
+        assert!(result.is_err());
+        assert_eq!(result.err().unwrap().message, "BookModel must have a valid long_description: Length must be between 50 and 2000 characters long Book ISBN: 978-3-16-148410-0");
     }
 }

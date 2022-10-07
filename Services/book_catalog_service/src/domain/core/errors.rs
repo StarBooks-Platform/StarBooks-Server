@@ -1,6 +1,7 @@
 use std::error;
 use std::fmt::{Display, Formatter, Result};
 
+// TODO: define ValidationErro as en enum with different error types
 #[derive(Debug, Clone)]
 pub struct ValidationError {
     pub message: String,

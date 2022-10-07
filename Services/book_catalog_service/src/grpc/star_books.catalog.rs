@@ -11,7 +11,7 @@ pub struct GetBooksResponse {
     pub book: ::core::option::Option<BookDto>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Author {
+pub struct AuthorDto {
     #[prost(string, tag="1")]
     pub first_name: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
@@ -26,7 +26,7 @@ pub struct BookDto {
     #[prost(string, tag="3")]
     pub publisher_name: ::prost::alloc::string::String,
     #[prost(message, repeated, tag="4")]
-    pub authors: ::prost::alloc::vec::Vec<Author>,
+    pub authors: ::prost::alloc::vec::Vec<AuthorDto>,
     #[prost(enumeration="Genre", tag="5")]
     pub genre: i32,
     #[prost(string, tag="6")]

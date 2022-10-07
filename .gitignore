@@ -3,3 +3,4 @@ Services/**/target
 Services/**/*.iml
 Services/**/.env*
 Services/**/.dockerignore
+Services/**/data
