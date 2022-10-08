@@ -18,7 +18,7 @@ mod config;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    dotenv::from_filename(".env.local").ok();
+    dotenv::dotenv().ok();
 
     let grpc_config = Arc::new(
         envy::prefixed("GRPC_")
