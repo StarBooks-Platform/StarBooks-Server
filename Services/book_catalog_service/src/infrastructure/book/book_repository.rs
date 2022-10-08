@@ -56,10 +56,10 @@ impl IRepository<Book> for BookRepository {
 
         let mut books = Vec::new();
         let mut count = 0;
-        while let Ok(Some(book)) = cursor.try_next().await {
+        while let Ok(Some(raw_book)) = cursor.try_next().await {
 
             if count >= skip && count < skip + page_size {
-                books.push(Book::try_from(book)
+                books.push(Book::try_from(raw_book)
                     .map_err(|e| ServerErrorType::InvalidEntityFound {
                         message: e.to_string(), 
                     })

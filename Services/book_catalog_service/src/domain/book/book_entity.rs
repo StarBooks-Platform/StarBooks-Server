@@ -13,7 +13,7 @@ use crate::infrastructure::book::book_model::{Asset, BookModel};
 #[derive(Debug)]
 pub struct Book {
     pub id: ObjectId,
-    pub isbn: ISBNWrapper,
+    pub isbn: IsbnWrapper,
     pub title: RblStringVvo<5, 50>,
     pub authors: Option<Vec<Author>>,
     pub publisher: Publisher,
@@ -26,9 +26,9 @@ pub struct Book {
     pub cover_image: Option<Vec<u8>>,
 }
 
-pub struct ISBNWrapper(ISBN);
+pub struct IsbnWrapper(pub ISBN);
 
-impl fmt::Debug for ISBNWrapper {
+impl fmt::Debug for IsbnWrapper {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0.isbn13())
     }
@@ -136,7 +136,7 @@ impl TryFrom<BookModel> for Book {
 
         Ok(Book {
             id,
-            isbn: ISBNWrapper(isbn),
+            isbn: IsbnWrapper(isbn),
             title,
             authors: authors
                 .into_iter()
