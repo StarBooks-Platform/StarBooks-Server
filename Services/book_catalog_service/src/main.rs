@@ -20,41 +20,51 @@ mod config;
 async fn main() -> Result<(), Box<dyn Error>> {
     dotenv::from_filename(".env.local").ok();
 
-    let grpc_config = envy::prefixed("GRPC_")
-        .from_env::<GrpcConfiguration>()
-        .expect("Please provide GRPC_HOST and GRPC_PORT environment variables");
+    let grpc_config = Arc::new(
+        envy::prefixed("GRPC_")
+            .from_env::<GrpcConfiguration>()
+            .expect("Please provide GRPC_HOST and GRPC_PORT environment variables")
+    );
 
     let addr = grpc_config.uri().parse()?;
 
-    let mongo_config = envy::prefixed("MONGO_")
-        .from_env::<MongoConfiguration>()
-        .expect("Please provide MONGO_HOST, MONGO_PORT, MONGO_DB, \
-        MONGO_COLLECTION, MONGO_USER and MONGO_PASS environment variables");
+    let mongo_config = Arc::new(
+        envy::prefixed("MONGO_")
+            .from_env::<MongoConfiguration>()
+            .expect("Please provide MONGO_HOST, MONGO_PORT, MONGO_DB, \
+        MONGO_COLLECTION, MONGO_USER and MONGO_PASS environment variables")
+    );
 
-    let book_repository = BookRepository::new(
-        mongo_config.uri(),
-        mongo_config.database,
-        mongo_config.collection,
-    ).await;
+    let mongo_client = Arc::new(
+        mongodb::Client::with_uri_str(&mongo_config.uri())
+            .await
+            .expect("Failed to initialize MongoDB client.")
+    );
 
-    //TODO: add dependency injection
-    let repository = Arc::new(Mutex::new(book_repository));
-    let mediator = DefaultAsyncMediator::builder()
-        .add_handler(GetPagedBooksHandler::new(repository))
-        .build();
+    let book_repository = Arc::new(
+        BookRepository::new(mongo_client, mongo_config)
+    );
+
+    let mediator = Arc::new(
+        Mutex::new(
+            DefaultAsyncMediator::builder()
+                .add_handler(
+                    GetPagedBooksHandler::new(
+                        book_repository
+                    ))
+                .build()
+        ));
 
     let book_catalog_service = BookCatalogServiceImpl::new(
-        Arc::new(
-            Mutex::new(mediator)
-        ),
+        mediator,
         grpc_config,
     );
 
     println!("Server listening on {}", addr);
 
-    let svc = CatalogServiceServer::new(book_catalog_service);
+    let catalog_service_server = CatalogServiceServer::new(book_catalog_service);
     tonic::transport::Server::builder()
-        .add_service(svc)
+        .add_service(catalog_service_server)
         .serve(addr)
         .await?;
 

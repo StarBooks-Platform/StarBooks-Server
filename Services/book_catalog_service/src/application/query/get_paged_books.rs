@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use async_trait::async_trait;
 use mediator::{AsyncRequestHandler, Request};
-use tokio::sync::Mutex;
+use runtime_injector::Svc;
 use crate::domain::book::book_entity::Book;
 use crate::grpc::BookDto;
 use crate::infrastructure::core::errors::ServerErrorType;
@@ -15,11 +15,11 @@ pub struct GetPagedBooksQuery {
 impl Request<Result<Option<Vec<BookDto>>, ServerErrorType>> for GetPagedBooksQuery {}
 
 pub struct GetPagedBooksHandler {
-    repository: Arc<Mutex<dyn IRepository<Book, Error=ServerErrorType>>>,
+    repository: Svc<dyn IRepository<Book, Error=ServerErrorType>>,
 }
 
 impl GetPagedBooksHandler {
-    pub fn new(repository: Arc<Mutex<dyn IRepository<Book, Error=ServerErrorType>>>) -> Self {
+    pub fn new(repository: Arc<dyn IRepository<Book, Error=ServerErrorType>>) -> Self {
         GetPagedBooksHandler { repository }
     }
 }
@@ -27,10 +27,8 @@ impl GetPagedBooksHandler {
 #[async_trait]
 impl AsyncRequestHandler<GetPagedBooksQuery, Result<Option<Vec<BookDto>>, ServerErrorType>> for GetPagedBooksHandler {
     async fn handle(&mut self, req: GetPagedBooksQuery) -> Result<Option<Vec<BookDto>>, ServerErrorType> {
-        let repository = self.repository.lock().await;
-
         // if there is any major error, pass it to the grpc server
-        let books = repository
+        let books = self.repository
             .get_paged(req.page, req.page_size)
             .await?;
 
@@ -58,7 +56,6 @@ mod get_paged_books_unit_tests {
     use async_trait::async_trait;
     use isbnid::isbn::ISBN;
     use mediator::AsyncRequestHandler;
-    use tokio::sync::Mutex;
     use crate::domain::book::book_entity::{Book, IsbnWrapper};
     use crate::domain::book::publisher::Publisher;
     use crate::domain::core::vvos::{PositiveFloatVvo, PositiveIntVvo, RblStringVvo, ReleaseYearVvo};
@@ -147,7 +144,7 @@ mod get_paged_books_unit_tests {
                 ))
             });
 
-        let mut handler = GetPagedBooksHandler::new(Arc::new(Mutex::new(repository)));
+        let mut handler = GetPagedBooksHandler::new(Arc::new(repository));
         let result = handler.handle(GetPagedBooksQuery { page: 0, page_size: 3 }).await.unwrap();
 
         assert_eq!(result.unwrap().len(), 3);

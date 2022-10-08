@@ -167,6 +167,7 @@ dependencies = [
  "mockall",
  "mongodb",
  "prost",
+ "runtime_injector",
  "rust-embed",
  "serde",
  "tokio",
@@ -1363,6 +1364,12 @@ dependencies = [
  "web-sys",
  "winapi",
 ]
+
+[[package]]
+name = "runtime_injector"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8dd0ce9c4b3f0555f9b1bbb83d8ba09749d74f04a2bb0657c0a474683f6faee9"
 
 [[package]]
 name = "rust-embed"

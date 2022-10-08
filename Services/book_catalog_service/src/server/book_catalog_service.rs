@@ -4,17 +4,16 @@ use tokio::sync::{mpsc, Mutex};
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 use crate::{GetPagedBooksQuery, GrpcConfiguration};
-
 use crate::grpc::{GetBooksRequest, GetBooksResponse};
 use crate::grpc::catalog_service_server::CatalogService;
 
 pub struct BookCatalogServiceImpl {
     mediator: Arc<Mutex<DefaultAsyncMediator>>,
-    grpc_config: GrpcConfiguration,
+    grpc_config: Arc<GrpcConfiguration>,
 }
 
 impl BookCatalogServiceImpl {
-    pub fn new(mediator: Arc<Mutex<DefaultAsyncMediator>>, grpc_config: GrpcConfiguration) -> Self {
+    pub fn new(mediator: Arc<Mutex<DefaultAsyncMediator>>, grpc_config: Arc<GrpcConfiguration>) -> Self {
         BookCatalogServiceImpl {
             mediator,
             grpc_config,
@@ -28,8 +27,8 @@ impl CatalogService for BookCatalogServiceImpl {
 
     async fn get_books(&self, request: Request<GetBooksRequest>) -> Result<Response<Self::GetBooksStream>, Status> {
         println!("Request from {:?}", request.remote_addr());
-
         let mut mediator = self.mediator.lock().await;
+
         let books = mediator
             .send(GetPagedBooksQuery {
                 page: request.get_ref().page,

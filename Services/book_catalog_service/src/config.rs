@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct GrpcConfiguration {
     host: String,
     port: u16,
@@ -8,12 +8,20 @@ pub struct GrpcConfiguration {
 }
 
 impl GrpcConfiguration {
+    pub fn new(host: String, port: u16, buffer_size: u32) -> Self {
+        GrpcConfiguration {
+            host,
+            port,
+            buffer_size,
+        }
+    }
+
     pub fn uri(&self) -> String {
         format!("{}:{}", self.host, self.port)
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct MongoConfiguration {
     host: String,
     port: u16,
@@ -27,6 +35,17 @@ pub struct MongoConfiguration {
 }
 
 impl MongoConfiguration {
+    pub fn new(host: String, port: u16, database: String, collection: String, username: String, password: String) -> Self {
+        MongoConfiguration {
+            host,
+            port,
+            database,
+            collection,
+            username,
+            password,
+        }
+    }
+
     pub fn uri(&self) -> String {
         format!(
             "mongodb://{}:{}@{}:{}",

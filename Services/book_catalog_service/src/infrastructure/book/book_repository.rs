@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use mongodb::Client;
 use crate::domain::core::i_repository::IRepository;
 use async_trait::async_trait;
@@ -6,31 +7,26 @@ use mongodb::bson::doc;
 use crate::domain::book::book_entity::Book;
 use crate::infrastructure::book::book_model::BookModel;
 use crate::infrastructure::core::errors::ServerErrorType;
+use crate::MongoConfiguration;
 
 #[derive(Clone, Debug)]
 pub struct BookRepository {
-    client: Client,
-    db_name: String,
-    collection_name: String,
+    client: Arc<Client>,
+    config: Arc<MongoConfiguration>,
 }
 
 impl BookRepository {
-    pub async fn new(mongodb_uri: String, db_name: String, collection_name: String) -> Self {
-        let mongodb_client = Client::with_uri_str(&mongodb_uri)
-            .await
-            .expect("Failed to initialize MongoDB client.");
-
+    pub fn new(client: Arc<Client>, config: Arc<MongoConfiguration>) -> Self {
         BookRepository {
-            client: mongodb_client,
-            db_name,
-            collection_name,
+            client,
+            config,
         }
     }
 
     fn get_books_collection(&self) -> mongodb::Collection<BookModel> {
         self.client
-            .database(&self.db_name)
-            .collection(&self.collection_name)
+            .database(&self.config.database)
+            .collection(&self.config.collection)
     }
 }
 
