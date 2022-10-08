@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 async-trait = "0.1.57"
 base64 = "0.13.0"
+chrono = "0.4.22"
 derive_more = { version = "0.99.17", features = ["display"] }
 domain_patterns = "0.2.141"
 dotenv = "0.15.0"

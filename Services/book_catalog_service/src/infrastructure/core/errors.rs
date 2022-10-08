@@ -1,7 +1,7 @@
 use derive_more::{Display, Error};
 
 #[derive(Debug, Display, Error)]
-pub enum ServerError {
+pub enum ServerErrorType {
     #[display(fmt = message)]
     MongoDb {
         message: String,
@@ -12,11 +12,11 @@ pub enum ServerError {
     }
 }
 
-impl ServerError {
+impl ServerErrorType {
     pub fn name(&self) -> String {
         match self {
-            ServerError::MongoDb { .. } => "MongoDbError".to_string(),
-            ServerError::InvalidEntityFound { .. } => "InvalidEntityFoundError".to_string(),
+            ServerErrorType::MongoDb { .. } => "MongoDbError".to_string(),
+            ServerErrorType::InvalidEntityFound { .. } => "InvalidEntityFoundError".to_string(),
         }
     }
 }

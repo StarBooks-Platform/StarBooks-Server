@@ -4,7 +4,7 @@ use mediator::{AsyncRequestHandler, Request};
 use tokio::sync::Mutex;
 use crate::domain::book::book_entity::Book;
 use crate::grpc::BookDto;
-use crate::infrastructure::core::errors::ServerError;
+use crate::infrastructure::core::errors::ServerErrorType;
 use crate::IRepository;
 
 pub struct GetPagedBooksQuery {
@@ -12,21 +12,21 @@ pub struct GetPagedBooksQuery {
     pub page_size: u32,
 }
 
-impl Request<Result<Option<Vec<BookDto>>, ServerError>> for GetPagedBooksQuery {}
+impl Request<Result<Option<Vec<BookDto>>, ServerErrorType>> for GetPagedBooksQuery {}
 
 pub struct GetPagedBooksHandler {
-    repository: Arc<Mutex<dyn IRepository<Book, Error = ServerError>>>,
+    repository: Arc<Mutex<dyn IRepository<Book, Error =ServerErrorType>>>,
 }
 
 impl GetPagedBooksHandler {
-    pub fn new(repository: Arc<Mutex<dyn IRepository<Book, Error = ServerError>>>) -> Self {
+    pub fn new(repository: Arc<Mutex<dyn IRepository<Book, Error =ServerErrorType>>>) -> Self {
         GetPagedBooksHandler { repository }
     }
 }
 
 #[async_trait]
-impl AsyncRequestHandler<GetPagedBooksQuery, Result<Option<Vec<BookDto>>, ServerError>> for GetPagedBooksHandler {
-    async fn handle(&mut self, req: GetPagedBooksQuery) -> Result<Option<Vec<BookDto>>, ServerError> {
+impl AsyncRequestHandler<GetPagedBooksQuery, Result<Option<Vec<BookDto>>, ServerErrorType>> for GetPagedBooksHandler {
+    async fn handle(&mut self, req: GetPagedBooksQuery) -> Result<Option<Vec<BookDto>>, ServerErrorType> {
         let repository = self.repository.lock().await;
 
         // if there is any major error, pass it to the grpc server
