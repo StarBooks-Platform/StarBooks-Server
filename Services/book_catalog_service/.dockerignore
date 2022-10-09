@@ -1,0 +1,10 @@
+/.idea/
+/target/
+/mongo-seed/
+/*.iml
+/data/
+/.env
+/.env.local
+/.env.example
+/Dockerfile
+/docker-compose.yml

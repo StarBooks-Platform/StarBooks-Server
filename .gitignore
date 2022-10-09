@@ -1,0 +1,5 @@
+Services/**/.idea
+Services/**/target
+Services/**/*.iml
+Services/**/.env*
+Services/**/data
