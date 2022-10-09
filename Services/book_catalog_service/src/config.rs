@@ -21,6 +21,16 @@ impl GrpcConfiguration {
     }
 }
 
+impl Default for GrpcConfiguration {
+    fn default() -> Self {
+        GrpcConfiguration {
+            host: "localhost".to_string(),
+            port: 50051,
+            buffer_size: 100,
+        }
+    }
+}
+
 #[derive(Deserialize, Debug, Clone)]
 pub struct MongoConfiguration {
     host: String,
@@ -51,5 +61,18 @@ impl MongoConfiguration {
             "mongodb://{}:{}@{}:{}",
             self.username, self.password, self.host, self.port
         )
+    }
+}
+
+impl Default for MongoConfiguration {
+    fn default() -> Self {
+        MongoConfiguration {
+            host: "localhost".to_string(),
+            port: 27017,
+            database: "catalog_db".to_string(),
+            collection: "book".to_string(),
+            username: "sami".to_string(),
+            password: "root2002".to_string(),
+        }
     }
 }
