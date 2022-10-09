@@ -7,14 +7,14 @@ use crate::{GetPagedBooksQuery, GrpcConfiguration};
 use crate::grpc::{GetBooksRequest, GetBooksResponse};
 use crate::grpc::catalog_service_server::CatalogService;
 
-pub struct BookCatalogServiceImpl {
+pub struct BookCatalogService {
     mediator: Arc<Mutex<DefaultAsyncMediator>>,
-    grpc_config: Arc<GrpcConfiguration>,
+    grpc_config: GrpcConfiguration,
 }
 
-impl BookCatalogServiceImpl {
-    pub fn new(mediator: Arc<Mutex<DefaultAsyncMediator>>, grpc_config: Arc<GrpcConfiguration>) -> Self {
-        BookCatalogServiceImpl {
+impl BookCatalogService {
+    pub fn new(mediator: Arc<Mutex<DefaultAsyncMediator>>, grpc_config: GrpcConfiguration) -> Self {
+        BookCatalogService {
             mediator,
             grpc_config,
         }
@@ -22,7 +22,7 @@ impl BookCatalogServiceImpl {
 }
 
 #[tonic::async_trait]
-impl CatalogService for BookCatalogServiceImpl {
+impl CatalogService for BookCatalogService {
     type GetBooksStream = ReceiverStream<Result<GetBooksResponse, Status>>;
 
     async fn get_books(&self, request: Request<GetBooksRequest>) -> Result<Response<Self::GetBooksStream>, Status> {

@@ -9,14 +9,13 @@ use crate::infrastructure::book::book_model::BookModel;
 use crate::infrastructure::core::errors::ServerErrorType;
 use crate::MongoConfiguration;
 
-#[derive(Clone, Debug)]
 pub struct BookRepository {
     client: Arc<Client>,
-    config: Arc<MongoConfiguration>,
+    config: MongoConfiguration,
 }
 
 impl BookRepository {
-    pub fn new(client: Arc<Client>, config: Arc<MongoConfiguration>) -> Self {
+    pub fn new(client: Arc<Client>, config: MongoConfiguration) -> Self {
         BookRepository {
             client,
             config,

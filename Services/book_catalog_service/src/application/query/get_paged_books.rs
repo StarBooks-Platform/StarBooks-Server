@@ -1,7 +1,6 @@
 use std::sync::Arc;
 use async_trait::async_trait;
 use mediator::{AsyncRequestHandler, Request};
-use runtime_injector::Svc;
 use crate::domain::book::book_entity::Book;
 use crate::grpc::BookDto;
 use crate::infrastructure::core::errors::ServerErrorType;
@@ -15,7 +14,7 @@ pub struct GetPagedBooksQuery {
 impl Request<Result<Option<Vec<BookDto>>, ServerErrorType>> for GetPagedBooksQuery {}
 
 pub struct GetPagedBooksHandler {
-    repository: Svc<dyn IRepository<Book, Error=ServerErrorType>>,
+    repository: Arc<dyn IRepository<Book, Error=ServerErrorType>>,
 }
 
 impl GetPagedBooksHandler {
