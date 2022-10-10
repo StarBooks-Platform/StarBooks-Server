@@ -33,13 +33,11 @@ impl BookRepository {
 impl IRepository<Book> for BookRepository {
     type Error = ServerErrorType;
 
-    async fn get_paged(&self, page: u32, page_size: u32) -> Result<Option<Vec<Result<Book, Self::Error>>>, Self::Error> {
+    async fn get_all(&self) -> Result<Option<Vec<Result<Book, Self::Error>>>, Self::Error> {
         let collection = self.get_books_collection();
 
-        let skip = (page - 1) * page_size;
         let sort_by_title = mongodb::options::FindOptions::builder()
             .sort(doc! { "title": 1 })
-            .limit((page * page_size) as i64)
             .build();
 
         let mut cursor = collection
@@ -50,21 +48,12 @@ impl IRepository<Book> for BookRepository {
             })?;
 
         let mut books = Vec::new();
-        let mut count = 0;
         while let Ok(Some(raw_book)) = cursor.try_next().await {
-
-            if count >= skip && count < skip + page_size {
-                books.push(Book::try_from(raw_book)
-                    .map_err(|e| ServerErrorType::InvalidEntityFound {
-                        message: e.to_string(), 
-                    })
-                );
-            }
-
-            count += 1;
-            if count >= skip + page_size {
-                break;
-            }
+            books.push(Book::try_from(raw_book)
+                .map_err(|e| ServerErrorType::InvalidEntityFound {
+                    message: e.to_string(),
+                })
+            );
         }
 
         match books.is_empty() {

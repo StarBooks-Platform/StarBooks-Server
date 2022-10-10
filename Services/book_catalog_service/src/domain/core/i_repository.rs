@@ -11,5 +11,5 @@ pub trait IRepository<TEntity: Entity>: Send + Sync {
     /// The actual list of entities is wrapped in an ```Option``` to allow for the possibility of an empty list.
     ///
     /// Also, every item in the list is a ```Result``` to allow for the possibility of an invalid entity.
-    async fn get_paged(&self, page: u32, page_size: u32) -> Result<Option<Vec<Result<TEntity, Self::Error>>>, Self::Error>;
+    async fn get_all(&self) -> Result<Option<Vec<Result<TEntity, Self::Error>>>, Self::Error>;
 }
