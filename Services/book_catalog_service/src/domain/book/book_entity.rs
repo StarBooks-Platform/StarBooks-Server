@@ -1,7 +1,8 @@
 use std::fmt;
 use std::fmt::Formatter;
+use std::str::FromStr;
 use domain_patterns::models::{Entity, ValueObject};
-use isbnid::isbn::ISBN;
+use isbn::Isbn13;
 use mongodb::bson::oid::ObjectId;
 use crate::domain::book::author::Author;
 use crate::domain::book::publisher::Publisher;
@@ -26,11 +27,17 @@ pub struct Book {
     pub cover_image: Option<Vec<u8>>,
 }
 
-pub struct IsbnWrapper(pub ISBN);
+pub struct IsbnWrapper(pub Isbn13);
+
+impl IsbnWrapper {
+    pub fn value(&self) -> String {
+        self.0.hyphenate().unwrap().to_string()
+    }
+}
 
 impl fmt::Debug for IsbnWrapper {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0.isbn13())
+        write!(f, "{}", self.value())
     }
 }
 
@@ -53,7 +60,7 @@ impl TryFrom<BookModel> for Book {
         let id = value.id.ok_or(ValidationErrorType::Id {
             message: "BookModel must have an id".to_string()
         })?;
-        let isbn = ISBN::new(value.isbn.as_str())
+        let isbn = Isbn13::from_str(value.isbn.as_str())
             .map_err(|_| ValidationErrorType::Isbn {
                 message: format!("BookModel must have a valid isbn: {}", value.isbn)
             })?;
@@ -158,7 +165,7 @@ impl TryFrom<BookModel> for Book {
 impl From<Book> for BookDto {
     fn from(value: Book) -> Self {
         BookDto {
-            isbn: value.isbn.0.isbn13(),
+            isbn: value.isbn.value(),
             title: value.title.value(),
             publisher_name: value.publisher.name.value(),
             authors: value.authors
@@ -178,10 +185,12 @@ impl From<Book> for BookDto {
 #[cfg(test)]
 mod book_entity_unit_tests {
     use chrono::Datelike;
+    use domain_patterns::models::ValueObject;
     use mongodb::bson::oid::ObjectId;
     use crate::domain::book::book_entity::Book;
     use crate::domain::core::errors::ValidationErrorType;
-    use crate::infrastructure::book::book_model::{AuthorModel, BookModel, GenreModel, PublisherModel};
+    use crate::grpc::Genre;
+    use crate::infrastructure::book::book_model::{Asset, AuthorModel, BookModel, GenreModel, PublisherModel};
 
     #[test]
     fn when_trying_to_create_a_book_from_a_book_model_with_an_invalid_isbn_then_an_error_is_returned() {
@@ -481,8 +490,23 @@ mod book_entity_unit_tests {
 
         // Act
         let result = Book::try_from(book_model);
+        let result = result.as_ref();
 
         // Assert
         assert!(result.is_ok());
+        assert_eq!(result.unwrap().isbn.value(), "978-3-16-148410-0");
+        assert_eq!(result.unwrap().title.value(), "The Book of the Book");
+        assert_eq!(result.unwrap().publisher.name.value(), "The Publisher");
+        assert_eq!(result.unwrap().publisher.address.value(), "The Address");
+        assert_eq!(result.unwrap().short_description.value(), "The short description");
+        assert_eq!(result.unwrap().long_description.value(), "The long description is such a long description to write");
+        assert_eq!(result.unwrap().price.value(), 10.0);
+        assert_eq!(result.unwrap().genre, Genre::Fiction);
+        assert_eq!(result.unwrap().year.value(), 2020);
+        assert_eq!(result.unwrap().num_pages.value(), 100);
+        assert_eq!(result.unwrap().cover_image, match Asset::get("default.jpg") {
+            Some(default_asset) => Some(default_asset.data.to_vec()),
+            None => None
+        });
     }
 }
